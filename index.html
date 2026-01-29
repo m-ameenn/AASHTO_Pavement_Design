@@ -1257,9 +1257,26 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="deltaPSI">Change in Serviceability (ΔPSI)</label>
+                        <label for="pi">Initial Serviceability (Pi)</label>
                         <div class="input-wrapper">
-                            <input type="number" id="deltaPSI" step="0.1" value="2.2" placeholder="Enter ΔPSI" oninput="calculate()">
+                            <input type="number" id="pi" step="0.1" min="0" max="5" value="4.2" placeholder="Enter Pi" oninput="updateDeltaPSI()">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="pt">Terminal Serviceability (Pt)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="pt" step="0.1" min="0" max="5" value="2.0" placeholder="Enter Pt" oninput="updateDeltaPSI()">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="deltaPSI">Change in Serviceability (ΔPSI) - Auto Calculated</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="deltaPSI" step="0.1" value="2.2" placeholder="Auto calculated" readonly>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+                            Formula: ΔPSI = Pi - Pt
                         </div>
                     </div>
 
@@ -1587,6 +1604,16 @@
             }
         }
 
+        function updateDeltaPSI() {
+            const Pi = parseFloat(document.getElementById('pi').value);
+            const Pt = parseFloat(document.getElementById('pt').value);
+            if (!isNaN(Pi) && !isNaN(Pt)) {
+                const deltaPSI = Pi - Pt;
+                document.getElementById('deltaPSI').value = deltaPSI.toFixed(1);
+                calculate();
+            }
+        }
+
         function updatePavementType(type) {
             currentPavementType = type;
             
@@ -1803,6 +1830,8 @@
             document.getElementById('reliability').value = '90';
             document.getElementById('zr').value = '-1.282';
             document.getElementById('so').value = '0.45';
+            document.getElementById('pi').value = '4.2';
+            document.getElementById('pt').value = '2.0';
             document.getElementById('deltaPSI').value = '2.2';
             document.getElementById('cbr').value = '';
             document.getElementById('mr').value = '';
