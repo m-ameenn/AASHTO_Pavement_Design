@@ -1232,9 +1232,20 @@
                     <h2 class="card-title">Input Parameters</h2>
                     
                     <div class="input-group">
-                        <label for="zr">Standard Normal Deviate (Zr)</label>
+                        <label for="reliability">Reliability (R)</label>
                         <div class="input-wrapper">
-                            <input type="number" id="zr" step="0.001" value="-1.282" placeholder="Enter Zr" oninput="calculate()">
+                            <input type="number" id="reliability" step="0.1" min="50" max="99.99" value="90" placeholder="Enter Reliability" oninput="updateZr()">
+                            <span class="unit">%</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="zr">Standard Normal Deviate (Zr) - Auto Calculated</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="zr" step="0.001" value="-1.282" placeholder="Auto calculated" readonly>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+                            From AASHTO reliability table
                         </div>
                     </div>
 
@@ -1522,6 +1533,60 @@
         let currentPavementType = 'asphalt';
         let layer4Active = false;
 
+        // AASHTO Reliability to Zr conversion table
+        function getZrFromReliability(R) {
+            // AASHTO Standard Normal Deviate values
+            const reliabilityTable = [
+                { R: 50, Zr: 0.000 },
+                { R: 60, Zr: -0.253 },
+                { R: 70, Zr: -0.524 },
+                { R: 75, Zr: -0.674 },
+                { R: 80, Zr: -0.841 },
+                { R: 85, Zr: -1.037 },
+                { R: 90, Zr: -1.282 },
+                { R: 91, Zr: -1.340 },
+                { R: 92, Zr: -1.405 },
+                { R: 93, Zr: -1.476 },
+                { R: 94, Zr: -1.555 },
+                { R: 95, Zr: -1.645 },
+                { R: 96, Zr: -1.751 },
+                { R: 97, Zr: -1.881 },
+                { R: 98, Zr: -2.054 },
+                { R: 99, Zr: -2.327 },
+                { R: 99.9, Zr: -3.090 },
+                { R: 99.99, Zr: -3.750 }
+            ];
+
+            // Find closest match or interpolate
+            if (R <= 50) return 0.000;
+            if (R >= 99.99) return -3.750;
+
+            // Find bracketing values
+            for (let i = 0; i < reliabilityTable.length - 1; i++) {
+                if (R >= reliabilityTable[i].R && R <= reliabilityTable[i + 1].R) {
+                    // Linear interpolation
+                    const R1 = reliabilityTable[i].R;
+                    const R2 = reliabilityTable[i + 1].R;
+                    const Zr1 = reliabilityTable[i].Zr;
+                    const Zr2 = reliabilityTable[i + 1].Zr;
+                    
+                    const Zr = Zr1 + (R - R1) * (Zr2 - Zr1) / (R2 - R1);
+                    return Zr;
+                }
+            }
+
+            return -1.282; // Default for 90%
+        }
+
+        function updateZr() {
+            const R = parseFloat(document.getElementById('reliability').value);
+            if (!isNaN(R)) {
+                const Zr = getZrFromReliability(R);
+                document.getElementById('zr').value = Zr.toFixed(3);
+                calculate();
+            }
+        }
+
         function updatePavementType(type) {
             currentPavementType = type;
             
@@ -1735,6 +1800,7 @@
 
         window.onload = function() {
             // Ensure all default values are set (except CBR and ESALs which must be entered manually)
+            document.getElementById('reliability').value = '90';
             document.getElementById('zr').value = '-1.282';
             document.getElementById('so').value = '0.45';
             document.getElementById('deltaPSI').value = '2.2';
