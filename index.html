@@ -1356,6 +1356,29 @@
                     </div>
                 </div>
 
+                <!-- AASHTO Nomograph Section -->
+                <div class="card">
+                    <h2 class="card-title">AASHTO Design Nomograph</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                        Interactive visualization of design parameters to determine SN Required
+                    </p>
+                    
+                    <div style="background: var(--bg-dark); padding: 1.5rem; border-radius: 8px; overflow-x: auto;">
+                        <canvas id="nomographCanvas" width="1000" height="600" style="max-width: 100%; height: auto; display: block; margin: 0 auto;"></canvas>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-dark); border-radius: 8px; border-left: 3px solid var(--accent);">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.85rem;">
+                            <div><strong style="color: var(--accent);">Design ESALs:</strong> <span id="nomograph-esals">-</span></div>
+                            <div><strong style="color: var(--accent);">Reliability (R):</strong> <span id="nomograph-reliability">-</span></div>
+                            <div><strong style="color: var(--accent);">So:</strong> <span id="nomograph-so">-</span></div>
+                            <div><strong style="color: var(--accent);">ΔPSI:</strong> <span id="nomograph-psi">-</span></div>
+                            <div><strong style="color: var(--accent);">Mr:</strong> <span id="nomograph-mr">-</span> psi</div>
+                            <div><strong style="color: var(--success);">SN Required:</strong> <span id="nomograph-sn" style="font-size: 1.1rem; font-weight: 700;">-</span></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Layer Design Card -->
                 <div class="card layers-card">
                     <h2 class="card-title">Pavement Layer Design</h2>
@@ -1796,6 +1819,215 @@
                     </span>
                 </div>
             `;
+            
+            // Draw nomograph after displaying results
+            drawNomograph();
+        }
+
+        function drawNomograph() {
+            const canvas = document.getElementById('nomographCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.fillStyle = '#1a1f26';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Get current values
+            const ESALs = parseFloat(document.getElementById('esals').value) || 0;
+            const R = parseFloat(document.getElementById('reliability').value) || 90;
+            const So = parseFloat(document.getElementById('so').value) || 0.45;
+            const deltaPSI = parseFloat(document.getElementById('deltaPSI').value) || 2.2;
+            const Mr = parseFloat(document.getElementById('mr').value) || 15000;
+            const SN = parseFloat(document.getElementById('snRequired').value) || 3;
+            
+            // Update nomograph info display
+            document.getElementById('nomograph-esals').textContent = ESALs.toLocaleString();
+            document.getElementById('nomograph-reliability').textContent = R.toFixed(1) + '%';
+            document.getElementById('nomograph-so').textContent = So.toFixed(2);
+            document.getElementById('nomograph-psi').textContent = deltaPSI.toFixed(1);
+            document.getElementById('nomograph-mr').textContent = Mr.toLocaleString();
+            document.getElementById('nomograph-sn').textContent = SN.toFixed(2);
+            
+            if (ESALs === 0 || Mr === 0) {
+                ctx.fillStyle = '#9ca3af';
+                ctx.font = '16px Work Sans';
+                ctx.textAlign = 'center';
+                ctx.fillText('Enter CBR and ESALs to display nomograph', width / 2, height / 2);
+                return;
+            }
+            
+            // Draw title
+            ctx.fillStyle = '#90a955';
+            ctx.font = 'bold 20px Work Sans';
+            ctx.textAlign = 'center';
+            ctx.fillText('AASHTO Flexible Pavement Design Nomograph', width / 2, 35);
+            
+            // Define axis positions
+            const margin = 80;
+            const chartWidth = width - 2 * margin;
+            const chartHeight = height - 2 * margin - 40;
+            const chartTop = 60;
+            const chartBottom = chartTop + chartHeight;
+            
+            // ESALs axis (left, log scale)
+            drawAxis(ctx, margin, chartTop, margin, chartBottom, 'Design ESALs (W18)', [1e4, 1e5, 1e6, 1e7, 1e8], true, 'left');
+            
+            // SN axis (center-left)
+            const snX = margin + chartWidth * 0.3;
+            drawAxis(ctx, snX, chartTop, snX, chartBottom, 'Structural Number (SN)', [1, 2, 3, 4, 5, 6, 7, 8], false, 'center');
+            
+            // Mr axis (center-right)
+            const mrX = margin + chartWidth * 0.65;
+            drawAxis(ctx, mrX, chartTop, mrX, chartBottom, 'Resilient Modulus Mr (psi)', [3000, 5000, 10000, 20000, 30000], true, 'center');
+            
+            // Reliability axis (right)
+            const relX = margin + chartWidth;
+            drawAxis(ctx, relX, chartTop, relX, chartBottom, 'Reliability R (%)', [50, 75, 85, 90, 95, 99], false, 'right');
+            
+            // Plot current design point
+            const logESALs = Math.log10(ESALs);
+            const esalsY = mapValue(logESALs, 4, 8, chartBottom, chartTop);
+            const snY = mapValue(SN, 1, 8, chartBottom, chartTop);
+            const mrY = mapValue(Math.log10(Mr), Math.log10(3000), Math.log10(30000), chartBottom, chartTop);
+            const relY = mapValue(R, 50, 99, chartBottom, chartTop);
+            
+            // Draw connecting lines
+            ctx.strokeStyle = '#90a955';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            
+            // Line from ESALs to SN
+            ctx.beginPath();
+            ctx.moveTo(margin, esalsY);
+            ctx.lineTo(snX, snY);
+            ctx.stroke();
+            
+            // Line from SN to Mr
+            ctx.beginPath();
+            ctx.moveTo(snX, snY);
+            ctx.lineTo(mrX, mrY);
+            ctx.stroke();
+            
+            // Line from Mr to Reliability
+            ctx.beginPath();
+            ctx.moveTo(mrX, mrY);
+            ctx.lineTo(relX, relY);
+            ctx.stroke();
+            
+            ctx.setLineDash([]);
+            
+            // Draw data points
+            drawPoint(ctx, margin, esalsY, '#ef4444', 8);
+            drawPoint(ctx, snX, snY, '#10b981', 10);
+            drawPoint(ctx, mrX, mrY, '#f59e0b', 8);
+            drawPoint(ctx, relX, relY, '#3b82f6', 8);
+            
+            // Add labels for points
+            ctx.fillStyle = '#e8eaed';
+            ctx.font = 'bold 12px IBM Plex Mono';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${(ESALs/1e6).toFixed(2)}M`, margin + 10, esalsY - 10);
+            ctx.fillText(`SN=${SN.toFixed(2)}`, snX + 10, snY - 10);
+            ctx.fillText(`${Mr.toLocaleString()}`, mrX + 10, mrY - 10);
+            ctx.fillText(`${R.toFixed(1)}%`, relX - 60, relY - 10);
+            
+            // Add legend
+            const legendY = chartBottom + 30;
+            ctx.font = '11px Work Sans';
+            ctx.fillStyle = '#9ca3af';
+            ctx.textAlign = 'left';
+            ctx.fillText(`ΔPSI = ${deltaPSI.toFixed(1)}`, margin, legendY);
+            ctx.fillText(`So = ${So.toFixed(2)}`, margin + 150, legendY);
+        }
+        
+        function drawAxis(ctx, x1, y1, x2, y2, label, values, isLog, position) {
+            // Draw axis line
+            ctx.strokeStyle = '#4b5563';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            
+            // Draw ticks and labels
+            ctx.fillStyle = '#e8eaed';
+            ctx.font = '11px IBM Plex Mono';
+            
+            const axisLength = y2 - y1;
+            const minVal = isLog ? Math.log10(values[0]) : values[0];
+            const maxVal = isLog ? Math.log10(values[values.length - 1]) : values[values.length - 1];
+            
+            values.forEach(val => {
+                const logVal = isLog ? Math.log10(val) : val;
+                const y = mapValue(logVal, minVal, maxVal, y2, y1);
+                
+                // Draw tick
+                const tickLength = 8;
+                ctx.beginPath();
+                if (position === 'left') {
+                    ctx.moveTo(x1 - tickLength, y);
+                    ctx.lineTo(x1, y);
+                    ctx.textAlign = 'right';
+                    ctx.fillText(formatValue(val), x1 - tickLength - 5, y + 4);
+                } else if (position === 'right') {
+                    ctx.moveTo(x1, y);
+                    ctx.lineTo(x1 + tickLength, y);
+                    ctx.textAlign = 'left';
+                    ctx.fillText(formatValue(val), x1 + tickLength + 5, y + 4);
+                } else {
+                    ctx.moveTo(x1 - tickLength/2, y);
+                    ctx.lineTo(x1 + tickLength/2, y);
+                    ctx.textAlign = 'center';
+                    ctx.fillText(formatValue(val), x1, y - 10);
+                }
+                ctx.strokeStyle = '#4b5563';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+            
+            // Draw label
+            ctx.save();
+            ctx.fillStyle = '#90a955';
+            ctx.font = 'bold 13px Work Sans';
+            ctx.textAlign = 'center';
+            
+            if (position === 'left') {
+                ctx.translate(x1 - 55, (y1 + y2) / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText(label, 0, 0);
+            } else if (position === 'right') {
+                ctx.translate(x1 + 55, (y1 + y2) / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText(label, 0, 0);
+            } else {
+                ctx.fillText(label, x1, y1 - 25);
+            }
+            
+            ctx.restore();
+        }
+        
+        function drawPoint(ctx, x, y, color, size) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#e8eaed';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function mapValue(value, inMin, inMax, outMin, outMax) {
+            return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);
+        }
+        
+        function formatValue(val) {
+            if (val >= 1000000) return (val / 1000000).toFixed(0) + 'M';
+            if (val >= 1000) return (val / 1000).toFixed(0) + 'K';
+            return val.toFixed(val < 10 ? 1 : 0);
         }
 
         function displayLayers(layers, totalSN) {
