@@ -34,11 +34,16 @@
 
         body {
             font-family: 'Work Sans', sans-serif;
-            background: var(--bg-dark);
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
             color: var(--text-light);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container, .nav-container, .hero-content, .features, .blog-container {
+            position: relative;
+            z-index: 1;
         }
 
         /* Navigation */
@@ -48,6 +53,9 @@
             border-bottom: 1px solid var(--border);
             padding: 1.25rem 0;
             position: sticky;
+            top: 0;
+            z-index: 100;
+        }
             top: 0;
             z-index: 100;
         }
@@ -364,12 +372,25 @@
             border-radius: 12px;
             padding: 2rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            animation: cardFadeIn 0.6s ease-out;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(144, 169, 85, 0.3);
+            border-color: var(--accent);
         }
 
         .card-title {
@@ -450,7 +471,7 @@
         .calculate-btn {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -463,11 +484,29 @@
             letter-spacing: 1px;
             min-height: 48px;
             touch-action: manipulation;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .calculate-btn:hover::before {
+            left: 100%;
         }
 
         .calculate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 119, 45, 0.4);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
         .calculate-btn:active {
@@ -487,7 +526,34 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: slideInRight 0.5s ease-out;
+            transition: all 0.3s ease;
         }
+
+        .result-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(144, 169, 85, 0.3);
+            background: rgba(144, 169, 85, 0.05);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-item:nth-child(1) { animation-delay: 0.1s; }
+        .result-item:nth-child(2) { animation-delay: 0.2s; }
+        .result-item:nth-child(3) { animation-delay: 0.3s; }
+        .result-item:nth-child(4) { animation-delay: 0.4s; }
+        .result-item:nth-child(5) { animation-delay: 0.5s; }
+        .result-item:nth-child(6) { animation-delay: 0.6s; }
+        .result-item:nth-child(7) { animation-delay: 0.7s; }
 
         .result-label {
             color: var(--text-muted);
@@ -541,7 +607,31 @@
             border-radius: 8px;
             text-align: center;
             border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
         }
+
+        .layer-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(144, 169, 85, 0.3);
+            border-color: var(--accent);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .layer-item:nth-child(1) { animation-delay: 0.1s; }
+        .layer-item:nth-child(2) { animation-delay: 0.2s; }
+        .layer-item:nth-child(3) { animation-delay: 0.3s; }
+        .layer-item:nth-child(4) { animation-delay: 0.4s; }
 
         .layer-name {
             color: var(--accent);
@@ -1463,9 +1553,28 @@
                         Interactive visualization of design parameters to determine SN Required
                     </p>
                     
-                    <div style="background: var(--bg-dark); padding: 1.5rem; border-radius: 8px; overflow-x: auto;">
-                        <canvas id="nomographCanvas" width="1000" height="600" style="max-width: 100%; height: auto; display: block; margin: 0 auto;"></canvas>
+                    <div style="background: var(--bg-dark); padding: 1.5rem; border-radius: 8px; overflow: hidden; position: relative;">
+                        <canvas id="nomographCanvas" width="1000" height="600" style="max-width: 100%; height: auto; display: block; margin: 0 auto; cursor: zoom-in; transition: transform 0.3s ease;" onclick="zoomNomograph()"></canvas>
                     </div>
+                    
+                    <!-- Zoom Overlay -->
+                    <div id="zoomOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 9999; cursor: zoom-out; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;" onclick="closeZoom()">
+                        <canvas id="zoomedCanvas" width="1000" height="600" style="max-width: 95%; max-height: 95%; box-shadow: 0 0 50px rgba(99, 102, 241, 0.5); animation: zoomIn 0.3s ease;"></canvas>
+                        <div style="position: absolute; top: 20px; right: 20px; color: white; font-size: 2rem; cursor: pointer; background: rgba(255,255,255,0.1); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">✕</div>
+                    </div>
+
+                    <style>
+                        @keyframes zoomIn {
+                            from {
+                                transform: scale(0.8);
+                                opacity: 0;
+                            }
+                            to {
+                                transform: scale(1);
+                                opacity: 1;
+                            }
+                        }
+                    </style>
                     
                     <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-dark); border-radius: 8px; border-left: 3px solid var(--accent);">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.85rem;">
@@ -2365,6 +2474,30 @@
             setTimeout(() => {
                 document.title = originalTitle;
             }, 100);
+        }
+
+        function zoomNomograph() {
+            const overlay = document.getElementById('zoomOverlay');
+            const originalCanvas = document.getElementById('nomographCanvas');
+            const zoomedCanvas = document.getElementById('zoomedCanvas');
+            
+            // Copy the canvas content
+            const ctx = zoomedCanvas.getContext('2d');
+            ctx.drawImage(originalCanvas, 0, 0);
+            
+            // Show overlay with animation
+            overlay.style.display = 'flex';
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+            }, 10);
+        }
+
+        function closeZoom() {
+            const overlay = document.getElementById('zoomOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
         }
     </script>
 </body>
