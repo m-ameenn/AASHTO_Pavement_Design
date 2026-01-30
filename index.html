@@ -1201,6 +1201,16 @@
                         <a href="Terminal_Serviceability.jpg" target="_blank" class="read-more">View Reference →</a>
                     </div>
                 </div>
+
+                <div class="blog-card">
+                    <div class="blog-image">📉</div>
+                    <div class="blog-content">
+                        <span class="blog-tag">Nomograph</span>
+                        <h3>AASHTO Design Nomograph</h3>
+                        <p>Official AASHTO flexible pavement design nomograph showing the graphical relationship between reliability, effective roadbed soil resilient modulus, structural number, and design serviceability loss for pavement design.</p>
+                        <a href="AASHTO_Nomograph_Reference.png" target="_blank" class="read-more">View Nomograph →</a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1833,7 +1843,7 @@
             const height = canvas.height;
             
             // Clear canvas
-            ctx.fillStyle = '#1a1f26';
+            ctx.fillStyle = '#0f1419';
             ctx.fillRect(0, 0, width, height);
             
             // Get current values
@@ -1860,174 +1870,323 @@
                 return;
             }
             
+            // Define layout matching AASHTO nomograph
+            const leftMargin = 100;
+            const rightMargin = 100;
+            const topMargin = 80;
+            const bottomMargin = 80;
+            
+            // Axis positions (left to right)
+            const reliabilityX = leftMargin;
+            const effectiveMrX = leftMargin + 180;
+            const snAxisX = width - rightMargin - 350;
+            const deltaPSIX = width - rightMargin - 120;
+            const snRightX = width - rightMargin;
+            
+            const axisTop = topMargin;
+            const axisBottom = height - bottomMargin;
+            const axisHeight = axisBottom - axisTop;
+            
             // Draw title
             ctx.fillStyle = '#90a955';
-            ctx.font = 'bold 20px Work Sans';
+            ctx.font = 'bold 18px Work Sans';
             ctx.textAlign = 'center';
-            ctx.fillText('AASHTO Flexible Pavement Design Nomograph', width / 2, 35);
+            ctx.fillText('AASHTO Flexible Pavement Design Nomograph', width / 2, 40);
             
-            // Define axis positions
-            const margin = 80;
-            const chartWidth = width - 2 * margin;
-            const chartHeight = height - 2 * margin - 40;
-            const chartTop = 60;
-            const chartBottom = chartTop + chartHeight;
+            // Draw all axes
+            drawReliabilityAxis(ctx, reliabilityX, axisTop, axisBottom);
+            drawEffectiveMrAxis(ctx, effectiveMrX, axisTop, axisBottom);
+            drawSNAxis(ctx, snAxisX, axisTop, axisBottom);
+            drawDeltaPSIAxis(ctx, deltaPSIX, axisTop, axisBottom);
+            drawSNRightAxis(ctx, snRightX, axisTop, axisBottom);
             
-            // ESALs axis (left, log scale)
-            drawAxis(ctx, margin, chartTop, margin, chartBottom, 'Design ESALs (W18)', [1e4, 1e5, 1e6, 1e7, 1e8], true, 'left');
+            // Calculate positions for current values
+            const reliabilityY = mapReliability(R, axisTop, axisBottom);
+            const mrY = mapMr(Mr, axisTop, axisBottom);
+            const deltaPSIY = mapDeltaPSI(deltaPSI, axisTop, axisBottom);
+            const snY = mapSN(SN, axisTop, axisBottom);
             
-            // SN axis (center-left)
-            const snX = margin + chartWidth * 0.3;
-            drawAxis(ctx, snX, chartTop, snX, chartBottom, 'Structural Number (SN)', [1, 2, 3, 4, 5, 6, 7, 8], false, 'center');
-            
-            // Mr axis (center-right)
-            const mrX = margin + chartWidth * 0.65;
-            drawAxis(ctx, mrX, chartTop, mrX, chartBottom, 'Resilient Modulus Mr (psi)', [3000, 5000, 10000, 20000, 30000], true, 'center');
-            
-            // Reliability axis (right)
-            const relX = margin + chartWidth;
-            drawAxis(ctx, relX, chartTop, relX, chartBottom, 'Reliability R (%)', [50, 75, 85, 90, 95, 99], false, 'right');
-            
-            // Plot current design point
-            const logESALs = Math.log10(ESALs);
-            const esalsY = mapValue(logESALs, 4, 8, chartBottom, chartTop);
-            const snY = mapValue(SN, 1, 8, chartBottom, chartTop);
-            const mrY = mapValue(Math.log10(Mr), Math.log10(3000), Math.log10(30000), chartBottom, chartTop);
-            const relY = mapValue(R, 50, 99, chartBottom, chartTop);
-            
-            // Draw connecting lines
-            ctx.strokeStyle = '#90a955';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            
-            // Line from ESALs to SN
-            ctx.beginPath();
-            ctx.moveTo(margin, esalsY);
-            ctx.lineTo(snX, snY);
-            ctx.stroke();
-            
-            // Line from SN to Mr
-            ctx.beginPath();
-            ctx.moveTo(snX, snY);
-            ctx.lineTo(mrX, mrY);
-            ctx.stroke();
-            
-            // Line from Mr to Reliability
-            ctx.beginPath();
-            ctx.moveTo(mrX, mrY);
-            ctx.lineTo(relX, relY);
-            ctx.stroke();
-            
+            // Draw turn lines (matching AASHTO nomograph style)
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2.5;
             ctx.setLineDash([]);
             
+            // Line 1: Reliability to turn point (TL)
+            const turnPoint1X = (reliabilityX + effectiveMrX) / 2;
+            const turnPoint1Y = reliabilityY;
+            
+            ctx.beginPath();
+            ctx.moveTo(reliabilityX, reliabilityY);
+            ctx.lineTo(turnPoint1X, turnPoint1Y);
+            ctx.stroke();
+            
+            // Line 2: Turn point to Effective Mr (through So)
+            ctx.beginPath();
+            ctx.moveTo(turnPoint1X, turnPoint1Y);
+            ctx.lineTo(effectiveMrX, mrY);
+            ctx.stroke();
+            
+            // Line 3: Effective Mr to SN (left side)
+            ctx.beginPath();
+            ctx.moveTo(effectiveMrX, mrY);
+            ctx.lineTo(snAxisX, snY);
+            ctx.stroke();
+            
+            // Line 4: SN to Delta PSI
+            const turnPoint2X = (snAxisX + deltaPSIX) / 2;
+            const turnPoint2Y = (snY + deltaPSIY) / 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(snAxisX, snY);
+            ctx.lineTo(deltaPSIX, deltaPSIY);
+            ctx.stroke();
+            
+            // Line 5: Delta PSI to final SN (right side)
+            ctx.beginPath();
+            ctx.moveTo(deltaPSIX, deltaPSIY);
+            ctx.lineTo(snRightX, snY);
+            ctx.stroke();
+            
             // Draw data points
-            drawPoint(ctx, margin, esalsY, '#ef4444', 8);
-            drawPoint(ctx, snX, snY, '#10b981', 10);
-            drawPoint(ctx, mrX, mrY, '#f59e0b', 8);
-            drawPoint(ctx, relX, relY, '#3b82f6', 8);
+            drawDataPoint(ctx, reliabilityX, reliabilityY, R.toFixed(1) + '%', 'left');
+            drawDataPoint(ctx, effectiveMrX, mrY, Mr.toLocaleString(), 'right');
+            drawDataPoint(ctx, snAxisX, snY, 'SN=' + SN.toFixed(2), 'left');
+            drawDataPoint(ctx, deltaPSIX, deltaPSIY, 'ΔPSI=' + deltaPSI.toFixed(1), 'right');
+            drawDataPoint(ctx, snRightX, snY, 'SN=' + SN.toFixed(2), 'right');
             
-            // Add labels for points
+            // Add So indicator on the line
+            const soIndicatorX = (turnPoint1X + effectiveMrX) / 2;
+            const soIndicatorY = (turnPoint1Y + mrY) / 2;
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(soIndicatorX, soIndicatorY, 5, 0, 2 * Math.PI);
+            ctx.fill();
             ctx.fillStyle = '#e8eaed';
-            ctx.font = 'bold 12px IBM Plex Mono';
-            ctx.textAlign = 'left';
-            ctx.fillText(`${(ESALs/1e6).toFixed(2)}M`, margin + 10, esalsY - 10);
-            ctx.fillText(`SN=${SN.toFixed(2)}`, snX + 10, snY - 10);
-            ctx.fillText(`${Mr.toLocaleString()}`, mrX + 10, mrY - 10);
-            ctx.fillText(`${R.toFixed(1)}%`, relX - 60, relY - 10);
-            
-            // Add legend
-            const legendY = chartBottom + 30;
-            ctx.font = '11px Work Sans';
-            ctx.fillStyle = '#9ca3af';
-            ctx.textAlign = 'left';
-            ctx.fillText(`ΔPSI = ${deltaPSI.toFixed(1)}`, margin, legendY);
-            ctx.fillText(`So = ${So.toFixed(2)}`, margin + 150, legendY);
+            ctx.font = 'bold 11px IBM Plex Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText('So=' + So.toFixed(2), soIndicatorX, soIndicatorY - 12);
         }
         
-        function drawAxis(ctx, x1, y1, x2, y2, label, values, isLog, position) {
-            // Draw axis line
+        function drawReliabilityAxis(ctx, x, top, bottom) {
+            const values = [50, 60, 70, 75, 80, 85, 90, 95, 99, 99.9];
+            
             ctx.strokeStyle = '#4b5563';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
+            ctx.moveTo(x, top);
+            ctx.lineTo(x, bottom);
             ctx.stroke();
             
-            // Draw ticks and labels
             ctx.fillStyle = '#e8eaed';
-            ctx.font = '11px IBM Plex Mono';
-            
-            const axisLength = y2 - y1;
-            const minVal = isLog ? Math.log10(values[0]) : values[0];
-            const maxVal = isLog ? Math.log10(values[values.length - 1]) : values[values.length - 1];
+            ctx.font = '10px IBM Plex Mono';
             
             values.forEach(val => {
-                const logVal = isLog ? Math.log10(val) : val;
-                const y = mapValue(logVal, minVal, maxVal, y2, y1);
+                const y = mapReliability(val, top, bottom);
                 
-                // Draw tick
-                const tickLength = 8;
                 ctx.beginPath();
-                if (position === 'left') {
-                    ctx.moveTo(x1 - tickLength, y);
-                    ctx.lineTo(x1, y);
-                    ctx.textAlign = 'right';
-                    ctx.fillText(formatValue(val), x1 - tickLength - 5, y + 4);
-                } else if (position === 'right') {
-                    ctx.moveTo(x1, y);
-                    ctx.lineTo(x1 + tickLength, y);
-                    ctx.textAlign = 'left';
-                    ctx.fillText(formatValue(val), x1 + tickLength + 5, y + 4);
-                } else {
-                    ctx.moveTo(x1 - tickLength/2, y);
-                    ctx.lineTo(x1 + tickLength/2, y);
-                    ctx.textAlign = 'center';
-                    ctx.fillText(formatValue(val), x1, y - 10);
-                }
-                ctx.strokeStyle = '#4b5563';
-                ctx.lineWidth = 1;
+                ctx.moveTo(x - 6, y);
+                ctx.lineTo(x + 6, y);
                 ctx.stroke();
+                
+                ctx.textAlign = 'right';
+                ctx.fillText(val >= 99 ? val.toFixed(1) : val.toString(), x - 10, y + 3);
             });
             
-            // Draw label
+            // Label
             ctx.save();
             ctx.fillStyle = '#90a955';
-            ctx.font = 'bold 13px Work Sans';
+            ctx.font = 'bold 12px Work Sans';
             ctx.textAlign = 'center';
-            
-            if (position === 'left') {
-                ctx.translate(x1 - 55, (y1 + y2) / 2);
-                ctx.rotate(-Math.PI / 2);
-                ctx.fillText(label, 0, 0);
-            } else if (position === 'right') {
-                ctx.translate(x1 + 55, (y1 + y2) / 2);
-                ctx.rotate(-Math.PI / 2);
-                ctx.fillText(label, 0, 0);
-            } else {
-                ctx.fillText(label, x1, y1 - 25);
-            }
-            
+            ctx.translate(x - 50, (top + bottom) / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Reliability, R (%)', 0, 0);
             ctx.restore();
         }
         
-        function drawPoint(ctx, x, y, color, size) {
-            ctx.fillStyle = color;
+        function drawEffectiveMrAxis(ctx, x, top, bottom) {
+            const values = [1000, 2000, 3000, 5000, 7000, 10000, 15000, 20000, 30000];
+            
+            ctx.strokeStyle = '#4b5563';
+            ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.arc(x, y, size, 0, 2 * Math.PI);
+            ctx.moveTo(x, top);
+            ctx.lineTo(x, bottom);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#e8eaed';
+            ctx.font = '10px IBM Plex Mono';
+            
+            values.forEach(val => {
+                const y = mapMr(val, top, bottom);
+                
+                ctx.beginPath();
+                ctx.moveTo(x - 6, y);
+                ctx.lineTo(x + 6, y);
+                ctx.stroke();
+                
+                ctx.textAlign = 'left';
+                const label = val >= 1000 ? (val / 1000) + 'K' : val.toString();
+                ctx.fillText(label, x + 10, y + 3);
+            });
+            
+            // Label
+            ctx.save();
+            ctx.fillStyle = '#90a955';
+            ctx.font = 'bold 12px Work Sans';
+            ctx.textAlign = 'center';
+            ctx.translate(x + 60, (top + bottom) / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Effective Roadbed Soil Mr (psi)', 0, 0);
+            ctx.restore();
+        }
+        
+        function drawSNAxis(ctx, x, top, bottom) {
+            const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            
+            ctx.strokeStyle = '#4b5563';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x, top);
+            ctx.lineTo(x, bottom);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#e8eaed';
+            ctx.font = '11px IBM Plex Mono';
+            
+            values.forEach(val => {
+                const y = mapSN(val, top, bottom);
+                
+                ctx.strokeStyle = '#4b5563';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x - 8, y);
+                ctx.lineTo(x + 8, y);
+                ctx.stroke();
+                
+                ctx.textAlign = 'right';
+                ctx.fillText(val.toString(), x - 12, y + 4);
+            });
+            
+            // Label
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 13px Work Sans';
+            ctx.textAlign = 'center';
+            ctx.fillText('Design Structural Number, SN', x, top - 15);
+        }
+        
+        function drawDeltaPSIAxis(ctx, x, top, bottom) {
+            const values = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0];
+            
+            ctx.strokeStyle = '#4b5563';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, top);
+            ctx.lineTo(x, bottom);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#e8eaed';
+            ctx.font = '10px IBM Plex Mono';
+            
+            values.forEach(val => {
+                const y = mapDeltaPSI(val, top, bottom);
+                
+                ctx.beginPath();
+                ctx.moveTo(x - 6, y);
+                ctx.lineTo(x + 6, y);
+                ctx.stroke();
+                
+                ctx.textAlign = 'left';
+                ctx.fillText(val.toFixed(1), x + 10, y + 3);
+            });
+            
+            // Label
+            ctx.save();
+            ctx.fillStyle = '#90a955';
+            ctx.font = 'bold 11px Work Sans';
+            ctx.textAlign = 'center';
+            ctx.translate(x + 50, (top + bottom) / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Design Serviceability Loss, ΔPSI', 0, 0);
+            ctx.restore();
+        }
+        
+        function drawSNRightAxis(ctx, x, top, bottom) {
+            const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            
+            ctx.strokeStyle = '#4b5563';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x, top);
+            ctx.lineTo(x, bottom);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#e8eaed';
+            ctx.font = '11px IBM Plex Mono';
+            
+            values.forEach(val => {
+                const y = mapSN(val, top, bottom);
+                
+                ctx.strokeStyle = '#4b5563';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x - 8, y);
+                ctx.lineTo(x + 8, y);
+                ctx.stroke();
+                
+                ctx.textAlign = 'left';
+                ctx.fillText(val.toString(), x + 12, y + 4);
+            });
+            
+            // Label
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 13px Work Sans';
+            ctx.textAlign = 'center';
+            ctx.fillText('Design Structural Number, SN', x, top - 15);
+        }
+        
+        function drawDataPoint(ctx, x, y, label, align) {
+            // Draw point
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, 2 * Math.PI);
             ctx.fill();
-            ctx.strokeStyle = '#e8eaed';
+            ctx.strokeStyle = '#fff';
             ctx.lineWidth = 2;
             ctx.stroke();
+            
+            // Draw label
+            ctx.fillStyle = '#fef08a';
+            ctx.font = 'bold 11px IBM Plex Mono';
+            ctx.textAlign = align;
+            const offset = align === 'left' ? -12 : 12;
+            ctx.fillText(label, x + offset, y - 10);
         }
         
-        function mapValue(value, inMin, inMax, outMin, outMax) {
-            return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);
+        function mapReliability(R, top, bottom) {
+            // Non-linear mapping for reliability (compressed at top)
+            const normalized = (R - 50) / (99.9 - 50);
+            return bottom - normalized * (bottom - top);
         }
         
-        function formatValue(val) {
-            if (val >= 1000000) return (val / 1000000).toFixed(0) + 'M';
-            if (val >= 1000) return (val / 1000).toFixed(0) + 'K';
-            return val.toFixed(val < 10 ? 1 : 0);
+        function mapMr(Mr, top, bottom) {
+            // Log scale for Mr
+            const logMr = Math.log10(Mr);
+            const logMin = Math.log10(1000);
+            const logMax = Math.log10(30000);
+            const normalized = (logMr - logMin) / (logMax - logMin);
+            return bottom - normalized * (bottom - top);
+        }
+        
+        function mapSN(SN, top, bottom) {
+            // Linear scale for SN (1 to 10)
+            const normalized = (SN - 1) / (10 - 1);
+            return bottom - normalized * (bottom - top);
+        }
+        
+        function mapDeltaPSI(psi, top, bottom) {
+            // Linear scale for Delta PSI (0.5 to 3.0)
+            const normalized = (psi - 0.5) / (3.0 - 0.5);
+            return bottom - normalized * (bottom - top);
         }
 
         function displayLayers(layers, totalSN) {
