@@ -1773,13 +1773,19 @@
                         </div>
                     </div>
 
-                    <!-- Download PDF Button at the End -->
+                    <!-- Download Options at the End -->
                     <div style="margin-top: 2rem; text-align: center;">
-                        <button onclick="printToPDF()" class="calculate-btn print-hide" style="max-width: 500px; margin: 0 auto; background: linear-gradient(135deg, #4f772d 0%, #1a4d2e 100%);">
-                            📄 Download Design Report (PDF)
-                        </button>
-                        <p class="print-hide" style="color: var(--text-muted); margin-top: 0.75rem; font-size: 0.9rem;">
-                            Save your complete pavement design calculation as PDF
+                        <h3 style="color: var(--accent); margin-bottom: 1rem; font-size: 1.2rem;">📥 Download Design Report</h3>
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; max-width: 800px; margin: 0 auto;">
+                            <button onclick="downloadPDF()" class="calculate-btn print-hide" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                                📄 Download as PDF
+                            </button>
+                            <button onclick="downloadExcel()" class="calculate-btn print-hide" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                📊 Download as Excel
+                            </button>
+                        </div>
+                        <p class="print-hide" style="color: var(--text-muted); margin-top: 0.75rem; font-size: 0.85rem;">
+                            PDF: Print-ready report | Excel: Editable with formulas
                         </p>
                     </div>
                 </div>
@@ -2479,7 +2485,7 @@
             // Don't run calculation initially - wait for user to enter CBR and ESALs
         };
 
-        function printToPDF() {
+        function downloadPDF() {
             // Get the current date for filename
             const roadName = document.getElementById('roadName').value || 'Pavement_Design';
             const date = new Date().toISOString().split('T')[0];
@@ -2496,6 +2502,106 @@
             setTimeout(() => {
                 document.title = originalTitle;
             }, 100);
+        }
+
+        function downloadExcel() {
+            try {
+                // Safely get all current values with null checks
+                const roadNameEl = document.getElementById('roadName');
+                const yearEl = document.getElementById('year');
+                const performancePeriodEl = document.getElementById('performancePeriod');
+                
+                const roadName = roadNameEl ? roadNameEl.value || 'Pavement Design' : 'Pavement Design';
+                const year = yearEl ? yearEl.value || new Date().getFullYear() : new Date().getFullYear();
+                const performancePeriod = performancePeriodEl ? performancePeriodEl.value || '' : '';
+                
+                const R = parseFloat(document.getElementById('reliability').value) || 90;
+                const Zr = parseFloat(document.getElementById('zr').value) || -1.282;
+                const So = parseFloat(document.getElementById('so').value) || 0.45;
+                const Pi = parseFloat(document.getElementById('pi').value) || 4.2;
+                const Pt = parseFloat(document.getElementById('pt').value) || 2.0;
+                const deltaPSI = parseFloat(document.getElementById('deltaPSI').value) || 2.2;
+                const CBR = parseFloat(document.getElementById('cbr').value) || 0;
+                const Mr = parseFloat(document.getElementById('mr').value) || 0;
+                const ESALs = parseFloat(document.getElementById('esals').value) || 0;
+                const SNRequired = parseFloat(document.getElementById('snRequired').value) || 3;
+                
+                // Get layer data - simplified
+                const layerNames = ['Surface Layer', 'Base Layer', 'Subbase Layer', 'Improved Subgrade'];
+                let csvLayers = '';
+                let totalSN = 0;
+                
+                for (let i = 1; i <= 4; i++) {
+                    const a = parseFloat(document.getElementById(`layer${i}a`).value) || 0;
+                    const m = parseFloat(document.getElementById(`layer${i}m`).value) || 1;
+                    const thicknessMm = parseFloat(document.getElementById(`layer${i}mm`).value) || 0;
+                    const thicknessInch = parseFloat(document.getElementById(`layer${i}inch`).value) || 0;
+                    const contribution = a * m * thicknessInch;
+                    
+                    // Only add layer if it has thickness
+                    if (thicknessMm > 0) {
+                        csvLayers += `${layerNames[i-1]},${a.toFixed(3)},${m.toFixed(2)},${thicknessMm.toFixed(0)},${thicknessInch.toFixed(3)},${contribution.toFixed(3)},= ${a.toFixed(3)} × ${m.toFixed(2)} × ${thicknessInch.toFixed(3)}\n`;
+                        totalSN += contribution;
+                    }
+                }
+                
+                // Create CSV content
+                let csvContent = "AASHTO PAVEMENT DESIGN CALCULATOR\n\n";
+                csvContent += "PROJECT INFORMATION\n";
+                csvContent += `Road Name,${roadName}\n`;
+                csvContent += `Date,${new Date().toLocaleDateString()}\n`;
+                if (performancePeriod) {
+                    csvContent += `Performance Period,${performancePeriod} years\n`;
+                }
+                csvContent += "\n";
+                
+                csvContent += "INPUT PARAMETERS\n";
+                csvContent += "Parameter,Value,Unit,Notes\n";
+                csvContent += `Reliability (R),${R.toFixed(1)},%,Design reliability level\n`;
+                csvContent += `Standard Normal Deviate (Zr),${Zr.toFixed(3)},-,From AASHTO reliability table\n`;
+                csvContent += `Overall Std Deviation (So),${So.toFixed(2)},-,0.45 for flexible pavement\n`;
+                csvContent += `Initial Serviceability (Pi),${Pi.toFixed(1)},-,Pavement condition when new\n`;
+                csvContent += `Terminal Serviceability (Pt),${Pt.toFixed(1)},-,Minimum acceptable condition\n`;
+                csvContent += `Change in Serviceability (ΔPSI),${deltaPSI.toFixed(1)},-,= Pi - Pt = ${Pi.toFixed(1)} - ${Pt.toFixed(1)}\n`;
+                csvContent += `CBR (Subgrade),${CBR.toFixed(1)},%,California Bearing Ratio\n`;
+                csvContent += `Resilient Modulus (Mr),${Mr.toLocaleString()},psi,= CBR × 1500 = ${CBR.toFixed(1)} × 1500\n`;
+                csvContent += `Design ESALs (W18),${ESALs.toLocaleString()},-,18-kip equivalent single axle loads\n`;
+                csvContent += `SN Required,${SNRequired.toFixed(2)},-,From AASHTO equation balance\n\n`;
+                
+                csvContent += "LAYER DESIGN\n";
+                csvContent += "Layer,Coefficient (a),Drainage (m),Thickness (mm),Thickness (in),SN Contribution,Formula\n";
+                csvContent += csvLayers;
+                csvContent += `Total SN Design,,,,,${totalSN.toFixed(3)},\n\n`;
+                
+                csvContent += "AASHTO DESIGN EQUATION\n";
+                csvContent += "Log₁₀(W₁₈) = Zr×So + 9.36×log(SN+1) - 0.20 + [log((ΔPSI)/(4.2-1.5))] / [0.4 + 1094/(SN+1)^5.19] + 2.32×log(Mr) - 8.07\n\n";
+                
+                csvContent += `Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()} - AASHTO Pavement Design Calculator\n`;
+                
+                // Create and download file
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', `AASHTO_Design_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.display = 'none';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Clean up
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                console.log('✅ Excel file downloaded successfully!');
+                
+            } catch (error) {
+                console.error('Excel download error:', error);
+                alert('❌ Error downloading Excel file: ' + error.message + '\n\nPlease make sure you have entered CBR and ESALs values first.');
+            }
         }
 
         function zoomNomograph() {
