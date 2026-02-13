@@ -1446,7 +1446,9 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="zr">Standard Normal Deviate (Zr) - Auto Calculated</label>
+                        <label for="zr">Standard Normal Deviate (Zr) - Auto Calculated
+                            <span style="font-size: 0.75rem; color: var(--accent); font-weight: 400; margin-left: 0.5rem;">📐 From AASHTO Table based on R%</span>
+                        </label>
                         <div class="input-wrapper">
                             <input type="number" id="zr" step="0.001" value="-1.282" placeholder="Auto calculated" readonly>
                         </div>
@@ -1477,7 +1479,9 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="deltaPSI">Change in Serviceability (ΔPSI) - Auto Calculated</label>
+                        <label for="deltaPSI">Change in Serviceability (ΔPSI) - Auto Calculated
+                            <span style="font-size: 0.75rem; color: var(--accent); font-weight: 400; margin-left: 0.5rem;">📐 ΔPSI = Pi - Pt</span>
+                        </label>
                         <div class="input-wrapper">
                             <input type="number" id="deltaPSI" step="0.1" value="2.2" placeholder="Auto calculated" readonly>
                         </div>
@@ -1495,7 +1499,9 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="mr">Resilient Modulus (Mr) - Auto Calculated</label>
+                        <label for="mr">Resilient Modulus (Mr) - Auto Calculated
+                            <span style="font-size: 0.75rem; color: var(--accent); font-weight: 400; margin-left: 0.5rem;">📐 Mr = CBR × 1500</span>
+                        </label>
                         <div class="input-wrapper">
                             <input type="number" id="mr" step="100" value="" placeholder="Auto calculated" readonly>
                             <span class="unit">psi</span>
@@ -1658,7 +1664,9 @@
                                         <input type="number" id="layer1mm" value="125" step="1" oninput="updateLayerInches(1)" style="font-size: 0.9rem;">
                                     </div>
                                     <div>
-                                        <label style="font-size: 0.8rem;">Thickness (inches)</label>
+                                        <label style="font-size: 0.8rem;">Thickness (inches)
+                                            <span style="font-size: 0.7rem; color: var(--accent); font-weight: 400; margin-left: 0.3rem;">📐 mm ÷ 25.4</span>
+                                        </label>
                                         <input type="number" id="layer1inch" value="4.921" step="0.001" readonly style="font-size: 0.9rem; font-weight: 600; color: var(--accent);">
                                     </div>
                                 </div>
@@ -1692,7 +1700,7 @@
                                         <input type="number" id="layer2mm" value="100" step="1" oninput="updateLayerInches(2)" style="font-size: 0.9rem;">
                                     </div>
                                     <div>
-                                        <label style="font-size: 0.8rem;">Thickness (inches)</label>
+                                        <label style="font-size: 0.8rem;">Thickness (inches)<span style="font-size: 0.7rem; color: var(--accent); font-weight: 400; margin-left: 0.3rem;">📐 mm ÷ 25.4</span></label>
                                         <input type="number" id="layer2inch" value="3.937" step="0.001" readonly style="font-size: 0.9rem; font-weight: 600; color: var(--accent);">
                                     </div>
                                 </div>
@@ -1726,7 +1734,7 @@
                                         <input type="number" id="layer3mm" value="150" step="1" oninput="updateLayerInches(3)" style="font-size: 0.9rem;">
                                     </div>
                                     <div>
-                                        <label style="font-size: 0.8rem;">Thickness (inches)</label>
+                                        <label style="font-size: 0.8rem;">Thickness (inches)<span style="font-size: 0.7rem; color: var(--accent); font-weight: 400; margin-left: 0.3rem;">📐 mm ÷ 25.4</span></label>
                                         <input type="number" id="layer3inch" value="5.906" step="0.001" readonly style="font-size: 0.9rem; font-weight: 600; color: var(--accent);">
                                     </div>
                                 </div>
@@ -1761,7 +1769,7 @@
                                         <input type="number" id="layer4mm" value="0" step="1" oninput="updateLayerInches(4)" style="font-size: 0.9rem;">
                                     </div>
                                     <div>
-                                        <label style="font-size: 0.8rem;">Thickness (inches)</label>
+                                        <label style="font-size: 0.8rem;">Thickness (inches)<span style="font-size: 0.7rem; color: var(--accent); font-weight: 400; margin-left: 0.3rem;">📐 mm ÷ 25.4</span></label>
                                         <input type="number" id="layer4inch" value="0.000" step="0.001" readonly style="font-size: 0.9rem; font-weight: 600; color: var(--accent);">
                                     </div>
                                 </div>
@@ -1769,7 +1777,9 @@
                         </div>
                     </div>
 
-                    <h2 class="card-title" style="margin-top: 2rem;">SN Contribution Summary</h2>
+                    <h2 class="card-title" style="margin-top: 2rem;">SN Contribution Summary
+                        <span style="font-size: 0.8rem; color: var(--accent); font-weight: 400; margin-left: 1rem;">📐 SN = a × m × D (inches)</span>
+                    </h2>
                     <div id="layers" class="layers-grid">
                         <div class="empty-state">
                             Results will appear here after calculation
@@ -1790,10 +1800,179 @@
                             PDF: Print-ready report | Excel: Editable with formulas
                         </p>
                     </div>
+
+                    <!-- Professional Signature & Logo Section (For PDF) -->
+                    <div class="signature-section" style="margin-top: 4rem; padding: 2rem; border-top: 2px solid var(--border); page-break-inside: avoid;">
+                        
+                        <!-- Edit Mode Header -->
+                        <div class="print-hide" style="margin-bottom: 2rem; padding: 1rem; background: rgba(144, 169, 85, 0.1); border-left: 4px solid var(--accent); border-radius: 4px;">
+                            <p style="margin: 0; color: var(--text-light); font-weight: 600;">📝 Document Authorization (Fill before generating PDF)</p>
+                            <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.85rem;">Enter names, upload logo, and set date. These details will appear in your PDF report.</p>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+                            
+                            <!-- Company Logo Section with Upload -->
+                            <div style="text-align: center;">
+                                <div style="border: 2px dashed var(--border); border-radius: 8px; padding: 1.5rem; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-dark);">
+                                    <!-- Logo Preview -->
+                                    <div id="logoPreviewContainer" style="display: none; margin-bottom: 1rem;">
+                                        <img id="logoPreview" src="" alt="Company Logo" style="max-width: 200px; max-height: 150px; object-fit: contain;" />
+                                    </div>
+                                    
+                                    <!-- Upload Placeholder -->
+                                    <div id="logoPlaceholder" style="text-align: center;">
+                                        <div style="font-size: 3rem; margin-bottom: 0.5rem; color: var(--text-muted);">🏢</div>
+                                        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Company Logo</p>
+                                    </div>
+                                    
+                                    <!-- Upload Button -->
+                                    <div class="print-hide" style="margin-top: 1rem;">
+                                        <input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)" style="display: none;" />
+                                        <button onclick="document.getElementById('logoUpload').click()" class="calculate-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem; background: var(--accent);">
+                                            📤 Upload Logo
+                                        </button>
+                                        <button onclick="removeLogo()" id="removeLogo" class="calculate-btn print-hide" style="display: none; padding: 0.5rem 1rem; font-size: 0.9rem; background: #ef4444; margin-left: 0.5rem;">
+                                            ✕ Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Authorized Signature Section -->
+                            <div>
+                                <!-- Designed By Input -->
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label class="print-hide" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Designed By (Authorized Person)</label>
+                                    <input type="text" id="designedBy" placeholder="Enter name of design engineer" class="print-hide" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-light); font-family: inherit; margin-bottom: 0.5rem;" />
+                                    
+                                    <div style="border-bottom: 2px solid var(--text-dark); width: 100%; height: 60px; margin-bottom: 0.5rem; display: flex; align-items: flex-end; padding-bottom: 0.5rem;">
+                                        <span id="designedByDisplay" style="font-family: 'Brush Script MT', cursive; font-size: 1.5rem; color: var(--text-light);"></span>
+                                    </div>
+                                    <p style="margin: 0.5rem 0; font-weight: 600; color: var(--text-light); font-size: 1rem;">Authorized Signature</p>
+                                    <p style="margin: 0.25rem 0; color: var(--text-muted); font-size: 0.85rem;">Design Engineer</p>
+                                </div>
+
+                                <!-- Date Input -->
+                                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                                    <label class="print-hide" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Date</label>
+                                    <input type="date" id="designDate" class="print-hide" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-light); font-family: 'IBM Plex Mono', monospace; margin-bottom: 0.5rem;" />
+                                    <p style="margin: 0.25rem 0; color: var(--text-muted); font-size: 0.85rem;">Date: <span id="designDateDisplay" style="color: var(--text-light); font-weight: 600;">_______________</span></p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Additional Information Row -->
+                        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            
+                            <!-- Reviewed By -->
+                            <div style="text-align: center;">
+                                <label class="print-hide" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Reviewed By</label>
+                                <input type="text" id="reviewedBy" placeholder="Enter reviewer name" class="print-hide" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-light); font-family: inherit; margin-bottom: 0.5rem;" />
+                                
+                                <div style="border-bottom: 2px solid var(--text-dark); width: 100%; height: 50px; margin-bottom: 0.5rem; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 0.5rem;">
+                                    <span id="reviewedByDisplay" style="font-family: 'Brush Script MT', cursive; font-size: 1.3rem; color: var(--text-light);"></span>
+                                </div>
+                                <p style="margin: 0.5rem 0; font-weight: 600; color: var(--text-light); font-size: 0.95rem;">Reviewed By</p>
+                                <p style="margin: 0.25rem 0; color: var(--text-muted); font-size: 0.8rem;">Senior Engineer / Technical Lead</p>
+                            </div>
+
+                            <!-- Approved By -->
+                            <div style="text-align: center;">
+                                <label class="print-hide" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Approved By</label>
+                                <input type="text" id="approvedBy" placeholder="Enter approver name" class="print-hide" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-light); font-family: inherit; margin-bottom: 0.5rem;" />
+                                
+                                <div style="border-bottom: 2px solid var(--text-dark); width: 100%; height: 50px; margin-bottom: 0.5rem; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 0.5rem;">
+                                    <span id="approvedByDisplay" style="font-family: 'Brush Script MT', cursive; font-size: 1.3rem; color: var(--text-light);"></span>
+                                </div>
+                                <p style="margin: 0.5rem 0; font-weight: 600; color: var(--text-light); font-size: 0.95rem;">Approved By</p>
+                                <p style="margin: 0.25rem 0; color: var(--text-muted); font-size: 0.8rem;">Project Manager / Director</p>
+                            </div>
+
+                        </div>
+
+                        <!-- Document Information Footer -->
+                        <div style="margin-top: 2rem; padding: 1rem; background: var(--bg-dark); border-radius: 8px; text-align: center;">
+                            <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">
+                                📄 This document is generated by AASHTO Pavement Design Calculator
+                            </p>
+                            <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.75rem;">
+                                Generated on: <span id="pdfDate"></span> | Reference: AASHTO 1993 Guide for Design of Pavement Structures
+                            </p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </section>
+
+    <script>
+        // Set PDF generation date
+        document.getElementById('pdfDate').textContent = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        // Set today's date as default in date picker
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('designDate').value = today;
+        document.getElementById('designDateDisplay').textContent = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        // Handle logo upload
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logoPreview').src = e.target.result;
+                    document.getElementById('logoPreviewContainer').style.display = 'block';
+                    document.getElementById('logoPlaceholder').style.display = 'none';
+                    document.getElementById('removeLogo').style.display = 'inline-block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Remove logo
+        function removeLogo() {
+            document.getElementById('logoPreview').src = '';
+            document.getElementById('logoPreviewContainer').style.display = 'none';
+            document.getElementById('logoPlaceholder').style.display = 'block';
+            document.getElementById('removeLogo').style.display = 'none';
+            document.getElementById('logoUpload').value = '';
+        }
+
+        // Update signature displays in real-time
+        document.getElementById('designedBy').addEventListener('input', function() {
+            document.getElementById('designedByDisplay').textContent = this.value;
+        });
+
+        document.getElementById('reviewedBy').addEventListener('input', function() {
+            document.getElementById('reviewedByDisplay').textContent = this.value;
+        });
+
+        document.getElementById('approvedBy').addEventListener('input', function() {
+            document.getElementById('approvedByDisplay').textContent = this.value;
+        });
+
+        document.getElementById('designDate').addEventListener('change', function() {
+            if (this.value) {
+                const date = new Date(this.value);
+                document.getElementById('designDateDisplay').textContent = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            }
+        });
+    </script>
 
     <!-- Footer -->
     <footer>
@@ -2771,7 +2950,9 @@
                     <input type="number" id="esal_growthRate" value="2.5" step="0.1" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); font-family: 'IBM Plex Mono', monospace;">
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Growth Factor (Auto-Calculated)</label>
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Growth Factor (Auto-Calculated)
+                        <span style="font-size: 0.75rem; color: var(--accent); font-weight: 400; display: block; margin-top: 0.2rem;">📐 GF = ((1+r/100)ⁿ - 1) / (r/100)</span>
+                    </label>
                     <input type="text" id="esal_growthFactor" value="" readonly style="width: 100%; padding: 0.75rem; background: #2d3748; border: 1px solid var(--accent); border-radius: 4px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 700; cursor: not-allowed;">
                 </div>
                 <div>
