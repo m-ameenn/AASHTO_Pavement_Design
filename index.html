@@ -1778,7 +1778,6 @@
 
                     <!-- Download Options at the End -->
                     <div style="margin-top: 2rem; text-align: center;">
-                        <h3 style="color: var(--accent); margin-bottom: 1rem; font-size: 1.2rem;">📥 Download Design Report</h3>
                         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; max-width: 800px; margin: 0 auto;">
                             <button onclick="downloadPDF()" class="calculate-btn print-hide" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
                                 📄 Download as PDF
@@ -2762,10 +2761,10 @@
             </div>
             
             <!-- Design Parameters -->
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-dark); border-radius: 8px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-dark); border-radius: 8px;">
                 <div>
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Design Period (years)</label>
-                    <input type="number" id="esal_designPeriod" value="20" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); font-family: 'IBM Plex Mono', monospace;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Design Period (from main form)</label>
+                    <input type="text" id="esal_designPeriod_display" value="" readonly style="width: 100%; padding: 0.75rem; background: #2d3748; border: 1px solid var(--accent); border-radius: 4px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 700; cursor: not-allowed;">
                 </div>
                 <div>
                     <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Traffic Growth Rate (%)</label>
@@ -2773,7 +2772,7 @@
                 </div>
                 <div>
                     <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Growth Factor (Auto-Calculated)</label>
-                    <input type="text" id="esal_growthFactor" value="25.545" readonly style="width: 100%; padding: 0.75rem; background: #2d3748; border: 1px solid var(--accent); border-radius: 4px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 700; cursor: not-allowed;">
+                    <input type="text" id="esal_growthFactor" value="" readonly style="width: 100%; padding: 0.75rem; background: #2d3748; border: 1px solid var(--accent); border-radius: 4px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 700; cursor: not-allowed;">
                 </div>
                 <div>
                     <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Directional Split (%)</label>
@@ -2781,7 +2780,7 @@
                 </div>
                 <div>
                     <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Lane Distribution Factor</label>
-                    <input type="number" id="esal_laneDistribution" value="1.0" step="0.1" min="0" max="1" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); font-family: 'IBM Plex Mono', monospace;">
+                    <input type="number" id="esal_laneDistribution" value="0.9" step="0.1" min="0" max="1" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); font-family: 'IBM Plex Mono', monospace;">
                 </div>
             </div>
             
@@ -2959,6 +2958,15 @@
 
     function openESALModal() {
         document.getElementById('esalModal').style.display = 'flex';
+        
+        // Get performance period from main form
+        const performancePeriod = document.getElementById('performancePeriod').value;
+        if (performancePeriod) {
+            document.getElementById('esal_designPeriod_display').value = performancePeriod + ' years';
+        } else {
+            document.getElementById('esal_designPeriod_display').value = 'Not set - please enter on main form';
+        }
+        
         autoCalculateESAL(); // Calculate on open
     }
 
@@ -2968,11 +2976,18 @@
 
     function autoCalculateESAL() {
         try {
-            // Get design parameters
-            const designPeriod = parseFloat(document.getElementById('esal_designPeriod').value) || 20;
+            // Get design parameters - USE PERFORMANCE PERIOD FROM MAIN FORM
+            const designPeriod = parseFloat(document.getElementById('performancePeriod').value);
+            
+            if (!designPeriod || designPeriod <= 0) {
+                console.warn('Performance period not set on main form');
+                document.getElementById('esal_growthFactor').value = 'N/A';
+                return;
+            }
+            
             const growthRate = parseFloat(document.getElementById('esal_growthRate').value) || 2.5;
             const directionalSplit = parseFloat(document.getElementById('esal_directionalSplit').value) / 100 || 0.5;
-            const laneDistribution = parseFloat(document.getElementById('esal_laneDistribution').value) || 1.0;
+            const laneDistribution = parseFloat(document.getElementById('esal_laneDistribution').value) || 0.9;
             
             // Calculate growth factor - EXACT EXCEL FORMULA: 
             // = (((1 + growthRate/100)^designPeriod) - 1) / (growthRate/100)
@@ -2980,6 +2995,7 @@
             
             // Display growth factor
             document.getElementById('esal_growthFactor').value = growthFactor.toFixed(3);
+            document.getElementById('esal_designPeriod_display').value = designPeriod + ' years';
             
             // Vehicle types and their LEF values (Truck Factor = LEF)
             const vehicles = [
