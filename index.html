@@ -1507,8 +1507,11 @@
 
                     <div class="input-group">
                         <label for="esals">Equivalent Single Axle Loads (ESALs)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="esals" step="1000" value="" placeholder="Enter ESALs" oninput="calculate()">
+                        <div class="input-wrapper" style="display: flex; gap: 0.5rem;">
+                            <input type="number" id="esals" step="1000" value="" placeholder="Enter ESALs or use calculator" oninput="calculate()" style="flex: 1;">
+                            <button onclick="openESALModal()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                                🧮 Calculate ESALs
+                            </button>
                         </div>
                     </div>
 
@@ -2748,5 +2751,346 @@
             }, 300);
         }
     </script>
+    <!-- ESAL Calculator Modal -->
+    <div id="esalModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; overflow-y: auto;">
+        <div style="background: var(--bg-card); border-radius: 12px; padding: 2rem; max-width: 1400px; width: 95%; max-height: 90vh; overflow-y: auto; margin: 2rem auto; border: 2px solid var(--accent);">
+            
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 1rem;">
+                <h2 style="color: var(--accent); margin: 0; font-size: 1.8rem;">🚛 ESAL Calculator - Traffic Data Input</h2>
+                <button onclick="closeESALModal()" style="background: #ef4444; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='rotate(90deg)'; this.style.background='#dc2626'" onmouseout="this.style.transform=''; this.style.background='#ef4444'">✕</button>
+            </div>
+            
+            <!-- Design Parameters -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-dark); border-radius: 8px;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Design Period (years)</label>
+                    <input type="number" id="esal_designPeriod" value="20" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); font-family: 'IBM Plex Mono', monospace;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Traffic Growth Rate (%)</label>
+                    <input type="number" id="esal_growthRate" value="2.5" step="0.1" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); font-family: 'IBM Plex Mono', monospace;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Growth Factor (Auto-Calculated)</label>
+                    <input type="text" id="esal_growthFactor" value="25.545" readonly style="width: 100%; padding: 0.75rem; background: #2d3748; border: 1px solid var(--accent); border-radius: 4px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 700; cursor: not-allowed;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Directional Split (%)</label>
+                    <input type="number" id="esal_directionalSplit" value="50" step="1" min="0" max="100" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); font-family: 'IBM Plex Mono', monospace;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Lane Distribution Factor</label>
+                    <input type="number" id="esal_laneDistribution" value="1.0" step="0.1" min="0" max="1" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); font-family: 'IBM Plex Mono', monospace;">
+                </div>
+            </div>
+            
+            <div style="background: rgba(144, 169, 85, 0.1); border-left: 4px solid var(--accent); padding: 1rem; border-radius: 4px; margin-bottom: 2rem;">
+                <p style="margin: 0; color: var(--text-light); font-size: 0.9rem;">
+                    💡 <strong>Auto Split:</strong> Traffic is automatically divided into 20% Empty and 80% Loaded. ESALs calculated separately for each.
+                </p>
+            </div>
+            
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 1.5rem;">📊 Average Daily Traffic by Vehicle Type</h3>
+            
+            <!-- Traffic Input Table with ESAL Breakdown -->
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem;">
+                    <thead>
+                        <tr style="background: var(--accent);">
+                            <th style="padding: 0.75rem; text-align: left; color: var(--bg-dark); font-weight: 700; border: 1px solid var(--border);">Vehicle Type</th>
+                            <th style="padding: 0.75rem; text-align: center; color: var(--bg-dark); font-weight: 700; border: 1px solid var(--border);">Daily Traffic</th>
+                            <th style="padding: 0.75rem; text-align: center; color: var(--bg-dark); font-weight: 700; border: 1px solid var(--border);">Empty (20%)</th>
+                            <th style="padding: 0.75rem; text-align: center; color: var(--bg-dark); font-weight: 700; border: 1px solid var(--border);">Truck Factor<br/>(LEF Empty)</th>
+                            <th style="padding: 0.75rem; text-align: center; color: var(--bg-dark); font-weight: 700; border: 1px solid var(--border);">ESAL Empty</th>
+                            <th style="padding: 0.75rem; text-align: center; color: var(--bg-dark); font-weight: 700; border: 1px solid var(--border);">Loaded (80%)</th>
+                            <th style="padding: 0.75rem; text-align: center; color: var(--bg-dark); font-weight: 700; border: 1px solid var(--border);">Truck Factor<br/>(LEF Loaded)</th>
+                            <th style="padding: 0.75rem; text-align: center; color: var(--bg-dark); font-weight: 700; border: 1px solid var(--border);">ESAL Loaded</th>
+                            <th style="padding: 0.75rem; text-align: center; color: var(--bg-dark); font-weight: 700; border: 1px solid var(--border);">Total ESAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="esalTableBody">
+                        <!-- Car -->
+                        <tr style="background: var(--bg-dark);">
+                            <td style="padding: 0.75rem; border: 1px solid var(--border);"><strong>🚗 Car / Taxi / Jeep</strong></td>
+                            <td style="padding: 0.5rem; border: 1px solid var(--border);">
+                                <input type="number" id="traffic_car" value="0" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); text-align: right; font-family: 'IBM Plex Mono', monospace;">
+                            </td>
+                            <td id="empty_car" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">0.002</td>
+                            <td id="esal_empty_car" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="loaded_car" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">0.002</td>
+                            <td id="esal_loaded_car" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="esal_total_car" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--accent);">0</td>
+                        </tr>
+                        
+                        <!-- Coaster -->
+                        <tr style="background: var(--bg-card);">
+                            <td style="padding: 0.75rem; border: 1px solid var(--border);"><strong>🚐 Coaster / Coach / Mini Bus</strong></td>
+                            <td style="padding: 0.5rem; border: 1px solid var(--border);">
+                                <input type="number" id="traffic_coaster" value="0" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); text-align: right; font-family: 'IBM Plex Mono', monospace;">
+                            </td>
+                            <td id="empty_coaster" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">0.0202</td>
+                            <td id="esal_empty_coaster" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="loaded_coaster" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">0.0202</td>
+                            <td id="esal_loaded_coaster" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="esal_total_coaster" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--accent);">0</td>
+                        </tr>
+                        
+                        <!-- Bus -->
+                        <tr style="background: var(--bg-dark);">
+                            <td style="padding: 0.75rem; border: 1px solid var(--border);"><strong>🚌 Large Bus</strong></td>
+                            <td style="padding: 0.5rem; border: 1px solid var(--border);">
+                                <input type="number" id="traffic_bus" value="0" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); text-align: right; font-family: 'IBM Plex Mono', monospace;">
+                            </td>
+                            <td id="empty_bus" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">0.0490</td>
+                            <td id="esal_empty_bus" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="loaded_bus" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">3.3723</td>
+                            <td id="esal_loaded_bus" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="esal_total_bus" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--accent);">0</td>
+                        </tr>
+                        
+                        <!-- 2 Axle -->
+                        <tr style="background: var(--bg-card);">
+                            <td style="padding: 0.75rem; border: 1px solid var(--border);"><strong>🚚 2 Axle Truck</strong></td>
+                            <td style="padding: 0.5rem; border: 1px solid var(--border);">
+                                <input type="number" id="traffic_2axle" value="0" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); text-align: right; font-family: 'IBM Plex Mono', monospace;">
+                            </td>
+                            <td id="empty_2axle" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">0.0490</td>
+                            <td id="esal_empty_2axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="loaded_2axle" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">3.3723</td>
+                            <td id="esal_loaded_2axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="esal_total_2axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--accent);">0</td>
+                        </tr>
+                        
+                        <!-- 3 Axle -->
+                        <tr style="background: var(--bg-dark);">
+                            <td style="padding: 0.75rem; border: 1px solid var(--border);"><strong>🚛 3 Axle Truck</strong></td>
+                            <td style="padding: 0.5rem; border: 1px solid var(--border);">
+                                <input type="number" id="traffic_3axle" value="0" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); text-align: right; font-family: 'IBM Plex Mono', monospace;">
+                            </td>
+                            <td id="empty_3axle" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">0.0818</td>
+                            <td id="esal_empty_3axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="loaded_3axle" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">2.1591</td>
+                            <td id="esal_loaded_3axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="esal_total_3axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--accent);">0</td>
+                        </tr>
+                        
+                        <!-- 4 Axle -->
+                        <tr style="background: var(--bg-card);">
+                            <td style="padding: 0.75rem; border: 1px solid var(--border);"><strong>🚛 4 Axle Truck</strong></td>
+                            <td style="padding: 0.5rem; border: 1px solid var(--border);">
+                                <input type="number" id="traffic_4axle" value="0" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); text-align: right; font-family: 'IBM Plex Mono', monospace;">
+                            </td>
+                            <td id="empty_4axle" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">0.3124</td>
+                            <td id="esal_empty_4axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="loaded_4axle" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">5.4996</td>
+                            <td id="esal_loaded_4axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="esal_total_4axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--accent);">0</td>
+                        </tr>
+                        
+                        <!-- 5 Axle -->
+                        <tr style="background: var(--bg-dark);">
+                            <td style="padding: 0.75rem; border: 1px solid var(--border);"><strong>🚚 5+ Axle Truck / Trailer</strong></td>
+                            <td style="padding: 0.5rem; border: 1px solid var(--border);">
+                                <input type="number" id="traffic_5axle" value="0" oninput="autoCalculateESAL()" style="width: 100%; padding: 0.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-light); text-align: right; font-family: 'IBM Plex Mono', monospace;">
+                            </td>
+                            <td id="empty_5axle" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">0.1884</td>
+                            <td id="esal_empty_5axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="loaded_5axle" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: var(--text-muted);">0</td>
+                            <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #a78bfa; font-weight: 600;">4.5000</td>
+                            <td id="esal_loaded_5axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; color: #fbbf24;">0</td>
+                            <td id="esal_total_5axle" style="padding: 0.75rem; text-align: right; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--accent);">0</td>
+                        </tr>
+                        
+                        <!-- Grand Total Row -->
+                        <tr style="background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);">
+                            <td colspan="4" style="padding: 1rem; text-align: right; border: 2px solid var(--accent); font-weight: 800; font-size: 1.1rem; color: var(--bg-dark);">TOTAL ESALs:</td>
+                            <td id="grand_total_empty" style="padding: 1rem; text-align: right; border: 2px solid var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--bg-dark);">0</td>
+                            <td colspan="2" style="padding: 1rem; border: 2px solid var(--accent);"></td>
+                            <td id="grand_total_loaded" style="padding: 1rem; text-align: right; border: 2px solid var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--bg-dark);">0</td>
+                            <td id="grand_total" style="padding: 1rem; text-align: right; border: 2px solid var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 800; font-size: 1.3rem; color: var(--bg-dark);">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Use ESAL Button -->
+            <button onclick="useCalculatedESAL()" style="width: 100%; background: #10b981; color: white; border: none; padding: 1.5rem; border-radius: 8px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#059669'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(16,185,129,0.5)'" onmouseout="this.style.background='#10b981'; this.style.transform=''; this.style.boxShadow=''">
+                ✅ Use Total ESAL Value in Design
+            </button>
+            
+        </div>
+    </div>
+
+    <script>
+    // Load Equivalency Factors from Excel file analysis
+    const LEF_EMPTY = {
+        car: 0.002,
+        coaster: 0.0202,
+        bus: 0.0490,
+        axle2: 0.0490,
+        axle3: 0.0818,
+        axle4: 0.3124,
+        axle5: 0.1884
+    };
+
+    const LEF_LOADED = {
+        car: 0.002,
+        coaster: 0.0202,
+        bus: 3.3723,
+        axle2: 3.3723,
+        axle3: 2.1591,
+        axle4: 5.4996,
+        axle5: 4.5000
+    };
+
+    function openESALModal() {
+        document.getElementById('esalModal').style.display = 'flex';
+        autoCalculateESAL(); // Calculate on open
+    }
+
+    function closeESALModal() {
+        document.getElementById('esalModal').style.display = 'none';
+    }
+
+    function autoCalculateESAL() {
+        try {
+            // Get design parameters
+            const designPeriod = parseFloat(document.getElementById('esal_designPeriod').value) || 20;
+            const growthRate = parseFloat(document.getElementById('esal_growthRate').value) || 2.5;
+            const directionalSplit = parseFloat(document.getElementById('esal_directionalSplit').value) / 100 || 0.5;
+            const laneDistribution = parseFloat(document.getElementById('esal_laneDistribution').value) || 1.0;
+            
+            // Calculate growth factor - EXACT EXCEL FORMULA: 
+            // = (((1 + growthRate/100)^designPeriod) - 1) / (growthRate/100)
+            const growthFactor = (((Math.pow((1 + growthRate/100), designPeriod)) - 1) / (growthRate/100));
+            
+            // Display growth factor
+            document.getElementById('esal_growthFactor').value = growthFactor.toFixed(3);
+            
+            // Vehicle types and their LEF values (Truck Factor = LEF)
+            const vehicles = [
+                {id: 'car', lefEmpty: LEF_EMPTY.car, lefLoaded: LEF_LOADED.car},
+                {id: 'coaster', lefEmpty: LEF_EMPTY.coaster, lefLoaded: LEF_LOADED.coaster},
+                {id: 'bus', lefEmpty: LEF_EMPTY.bus, lefLoaded: LEF_LOADED.bus},
+                {id: '2axle', lefEmpty: LEF_EMPTY.axle2, lefLoaded: LEF_LOADED.axle2},
+                {id: '3axle', lefEmpty: LEF_EMPTY.axle3, lefLoaded: LEF_LOADED.axle3},
+                {id: '4axle', lefEmpty: LEF_EMPTY.axle4, lefLoaded: LEF_LOADED.axle4},
+                {id: '5axle', lefEmpty: LEF_EMPTY.axle5, lefLoaded: LEF_LOADED.axle5}
+            ];
+            
+            let grandTotalEmpty = 0;
+            let grandTotalLoaded = 0;
+            
+            // Calculate for each vehicle type
+            vehicles.forEach(vehicle => {
+                const currentDailyTraffic = parseFloat(document.getElementById(`traffic_${vehicle.id}`).value) || 0;
+                
+                // Split: 20% empty, 80% loaded
+                const emptyCount = currentDailyTraffic * 0.2;
+                const loadedCount = currentDailyTraffic * 0.8;
+                
+                // EXACT FORMULA:
+                // Design Traffic = Growth Factor × Current Daily Traffic × 365
+                const designTrafficEmpty = growthFactor * emptyCount * 365;
+                const designTrafficLoaded = growthFactor * loadedCount * 365;
+                
+                // ESAL = Truck Factor × Design Traffic × Lane Distribution Factor
+                const esalEmpty = vehicle.lefEmpty * designTrafficEmpty * laneDistribution;
+                const esalLoaded = vehicle.lefLoaded * designTrafficLoaded * laneDistribution;
+                const esalTotal = esalEmpty + esalLoaded;
+                
+                // Update display
+                document.getElementById(`empty_${vehicle.id}`).textContent = Math.round(emptyCount).toLocaleString();
+                document.getElementById(`esal_empty_${vehicle.id}`).textContent = Math.round(esalEmpty).toLocaleString();
+                document.getElementById(`loaded_${vehicle.id}`).textContent = Math.round(loadedCount).toLocaleString();
+                document.getElementById(`esal_loaded_${vehicle.id}`).textContent = Math.round(esalLoaded).toLocaleString();
+                document.getElementById(`esal_total_${vehicle.id}`).textContent = Math.round(esalTotal).toLocaleString();
+                
+                // Add to grand totals
+                grandTotalEmpty += esalEmpty;
+                grandTotalLoaded += esalLoaded;
+            });
+            
+            const grandTotal = grandTotalEmpty + grandTotalLoaded;
+            
+            // Update grand total row
+            document.getElementById('grand_total_empty').textContent = Math.round(grandTotalEmpty).toLocaleString();
+            document.getElementById('grand_total_loaded').textContent = Math.round(grandTotalLoaded).toLocaleString();
+            document.getElementById('grand_total').textContent = Math.round(grandTotal).toLocaleString();
+            
+            // Store for later use
+            window.calculatedESAL = Math.round(grandTotal);
+            
+            console.log('✅ ESAL Calculation Summary:');
+            console.log('Growth Rate:', growthRate + '%');
+            console.log('Design Period:', designPeriod + ' years');
+            console.log('Growth Factor:', growthFactor.toFixed(3));
+            console.log('Formula: (((1 + ' + growthRate + '/100)^' + designPeriod + ') - 1) / (' + growthRate + '/100)');
+            console.log('Total Empty ESALs:', Math.round(grandTotalEmpty).toLocaleString());
+            console.log('Total Loaded ESALs:', Math.round(grandTotalLoaded).toLocaleString());
+            console.log('Grand Total ESALs:', Math.round(grandTotal).toLocaleString());
+            
+        } catch (error) {
+            console.error('ESAL calculation error:', error);
+        }
+    }
+
+    function useCalculatedESAL() {
+        if (window.calculatedESAL) {
+            const esalInput = document.getElementById('esals');
+            if (esalInput) {
+                esalInput.value = window.calculatedESAL;
+                closeESALModal();
+                
+                // Show success message
+                const successMsg = document.createElement('div');
+                successMsg.textContent = '✅ ESAL value of ' + window.calculatedESAL.toLocaleString() + ' has been applied!';
+                successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem 2rem; border-radius: 8px; font-weight: 600; z-index: 10001; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: slideIn 0.3s ease;';
+                document.body.appendChild(successMsg);
+                
+                setTimeout(() => {
+                    successMsg.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => successMsg.remove(), 300);
+                }, 3000);
+            }
+        }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('esalModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeESALModal();
+        }
+    });
+    
+    // Add animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    </script>
+
 </body>
 </html>
