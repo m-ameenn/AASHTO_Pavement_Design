@@ -915,7 +915,12 @@
 
         @media print {
             /* Hide navigation, hero, features, blog sections, nomograph when printing */
-            nav, .hero, .features, .blog, footer, .print-hide {
+            nav, .hero, .features, .blog, footer, .print-hide, section:has(h2:contains("How to Use")) {
+                display: none !important;
+            }
+
+            /* Also hide the how-to section specifically */
+            section[style*="linear-gradient(135deg, #1a4d2e"] {
                 display: none !important;
             }
 
@@ -1736,6 +1741,134 @@
         </div>
     </section>
 
+    <!-- How to Use Section -->
+    <section style="padding: 4rem 0; background: linear-gradient(135deg, #1a4d2e 0%, #2d5a3d 100%);">
+        <div class="container">
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <h2 style="text-align: center; color: #90a955; margin-bottom: 1rem; font-size: 2.5rem; font-weight: 800;">
+                    📖 How to Use This Calculator
+                </h2>
+                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 3rem; font-size: 1.1rem;">
+                    Follow these simple steps to design your pavement structure
+                </p>
+
+                <!-- Steps Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                    
+                    <!-- Step 1 -->
+                    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
+                        <div style="width: 60px; height: 60px; background: #90a955; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; color: #1a4d2e;">1</div>
+                        <h3 style="color: #90a955; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700;">Enter Project Information</h3>
+                        <ul style="color: rgba(255,255,255,0.9); line-height: 1.8; padding-left: 1.5rem; margin: 0;">
+                            <li>Project Name & Location</li>
+                            <li>Design Date</li>
+                            <li>Engineer Name</li>
+                            <li>Select Pavement Type (Asphalt/Concrete)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
+                        <div style="width: 60px; height: 60px; background: #90a955; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; color: #1a4d2e;">2</div>
+                        <h3 style="color: #90a955; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700;">Input Design Parameters</h3>
+                        <ul style="color: rgba(255,255,255,0.9); line-height: 1.8; padding-left: 1.5rem; margin: 0;">
+                            <li><strong>Performance Period:</strong> Design life (years)</li>
+                            <li><strong>Reliability (R):</strong> 85-99.9% (auto-calculates Zr)</li>
+                            <li><strong>Standard Deviation (So):</strong> 0.35-0.50</li>
+                            <li><strong>Serviceability:</strong> Initial (Pi) & Terminal (Pt)</li>
+                            <li><strong>CBR:</strong> Subgrade bearing capacity (auto-calculates Mr)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
+                        <div style="width: 60px; height: 60px; background: #90a955; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; color: #1a4d2e;">3</div>
+                        <h3 style="color: #90a955; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700;">Calculate ESALs</h3>
+                        <ul style="color: rgba(255,255,255,0.9); line-height: 1.8; padding-left: 1.5rem; margin: 0;">
+                            <li>Click <strong>"🧮 Calculate ESALs"</strong> button</li>
+                            <li>Enter daily traffic for each vehicle type</li>
+                            <li>Set growth rate & design period</li>
+                            <li>Calculator auto-splits 20% empty / 80% loaded</li>
+                            <li>Click <strong>"Use Total ESAL Value"</strong></li>
+                        </ul>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
+                        <div style="width: 60px; height: 60px; background: #90a955; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; color: #1a4d2e;">4</div>
+                        <h3 style="color: #90a955; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700;">Balance SN Required</h3>
+                        <ul style="color: rgba(255,255,255,0.9); line-height: 1.8; padding-left: 1.5rem; margin: 0;">
+                            <li>View the AASHTO equation display</li>
+                            <li>Adjust SN slider to balance LHS = RHS</li>
+                            <li>Or manually type SN value</li>
+                            <li>Watch nomograph update in real-time</li>
+                            <li>Find optimal Structural Number</li>
+                        </ul>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
+                        <div style="width: 60px; height: 60px; background: #90a955; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; color: #1a4d2e;">5</div>
+                        <h3 style="color: #90a955; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700;">Design Pavement Layers</h3>
+                        <ul style="color: rgba(255,255,255,0.9); line-height: 1.8; padding-left: 1.5rem; margin: 0;">
+                            <li>Enter layer properties (coefficient a, drainage m)</li>
+                            <li>Input thickness in mm (auto-converts to inches)</li>
+                            <li>Calculator shows SN contribution per layer</li>
+                            <li>Adjust until Total SN ≥ SN Required</li>
+                            <li>View typical cross-section diagram</li>
+                        </ul>
+                    </div>
+
+                    <!-- Step 6 -->
+                    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
+                        <div style="width: 60px; height: 60px; background: #90a955; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; color: #1a4d2e;">6</div>
+                        <h3 style="color: #90a955; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700;">Generate Report</h3>
+                        <ul style="color: rgba(255,255,255,0.9); line-height: 1.8; padding-left: 1.5rem; margin: 0;">
+                            <li>Scroll to Document Authorization</li>
+                            <li>Upload company logo</li>
+                            <li>Enter names: Designed By, Reviewed By, Approved By</li>
+                            <li>Set date</li>
+                            <li>Download as <strong>PDF</strong> or <strong>Excel</strong></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- Quick Tips -->
+                <div style="background: rgba(144,169,85,0.2); border: 2px solid #90a955; border-radius: 12px; padding: 2rem; margin-top: 2rem;">
+                    <h3 style="color: #90a955; margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 700; text-align: center;">
+                        💡 Quick Tips
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                        <div style="color: rgba(255,255,255,0.95); line-height: 1.6;">
+                            <strong style="color: #90a955; display: block; margin-bottom: 0.5rem;">📐 All Formulas Shown:</strong>
+                            Every auto-calculated field displays its formula in green text next to the label
+                        </div>
+                        <div style="color: rgba(255,255,255,0.95); line-height: 1.6;">
+                            <strong style="color: #90a955; display: block; margin-bottom: 0.5rem;">🔄 Real-Time Updates:</strong>
+                            Changes to inputs automatically update calculations - no need to click "Calculate" repeatedly
+                        </div>
+                        <div style="color: rgba(255,255,255,0.95); line-height: 1.6;">
+                            <strong style="color: #90a955; display: block; margin-bottom: 0.5rem;">📱 Mobile Friendly:</strong>
+                            Works perfectly on phones, tablets, and desktops with responsive design
+                        </div>
+                        <div style="color: rgba(255,255,255,0.95); line-height: 1.6;">
+                            <strong style="color: #90a955; display: block; margin-bottom: 0.5rem;">🎨 Interactive Nomograph:</strong>
+                            Zoom with mouse wheel, pan by dragging, press ESC to reset view
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Tutorial Placeholder (Optional) -->
+                <div style="text-align: center; margin-top: 3rem;">
+                    <a href="#calculator" style="display: inline-block; background: #90a955; color: #1a4d2e; padding: 1.2rem 3rem; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 1.2rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(144,169,85,0.4);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(144,169,85,0.6)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 15px rgba(144,169,85,0.4)'">
+                        🚀 Start Designing Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Calculator Section -->
     <section class="calculator-section" id="calculator">
         <div class="container">
@@ -2456,11 +2589,14 @@
 
     <!-- Footer -->
     <footer>
-        <div class="footer-content">
-            <p>&copy; 2025 AASHTO Pavement Design Calculator. All rights reserved.</p>
-            <div class="credit">
-                Created by <strong>Engr. M. Ameen</strong>
-            </div>
+        <div class="credit">
+    Designed & Developed by 
+    <a href="https://pk.linkedin.com/in/muhammad-ameen-78650322a"
+       target="_blank"
+       class="linkedin-btn">
+       Engr. M. Ameen
+    </a>
+</div>
         </div>
     </footer>
 
