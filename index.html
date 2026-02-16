@@ -1512,12 +1512,17 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="esals">Equivalent Single Axle Loads (ESALs)</label>
+                        <label for="esals">Equivalent Single Axle Loads (ESALs)
+                            <span style="font-size: 0.75rem; color: var(--accent); font-weight: 400; display: block; margin-top: 0.3rem;">📐 ESAL = Truck Factor (LEF) × Design Traffic × Lane Distribution</span>
+                        </label>
                         <div class="input-wrapper" style="display: flex; gap: 0.5rem;">
                             <input type="number" id="esals" step="1000" value="" placeholder="Enter ESALs or use calculator" oninput="calculate()" style="flex: 1;">
                             <button onclick="openESALModal()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
                                 🧮 Calculate ESALs
                             </button>
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem;">
+                            Where: Design Traffic = Growth Factor × Current Daily × 365
                         </div>
                     </div>
 
@@ -1530,7 +1535,11 @@
 
                 <!-- Results Card -->
                 <div class="card">
-                    <h2 class="card-title">Equation Balance</h2>
+                    <h2 class="card-title">Equation Balance - Find SN Required
+                        <span style="display: block; font-size: 0.7rem; color: var(--accent); font-weight: 400; margin-top: 0.5rem; line-height: 1.4;">
+                            📐 Log₁₀(W₁₈) = Zr×So + 9.36×log(SN+1) - 0.20 + [log(ΔPSI/(4.2-1.5))] / [0.4 + 1094/(SN+1)⁵·¹⁹] + 2.32×log(Mr) - 8.07
+                        </span>
+                    </h2>
                     
                     <div style="background: var(--bg-dark); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border: 2px solid var(--accent);">
                         <label style="display: block; margin-bottom: 1rem; color: var(--accent); font-weight: 600; font-size: 1rem;">
@@ -1786,21 +1795,6 @@
                         </div>
                     </div>
 
-                    <!-- Download Options at the End -->
-                    <div style="margin-top: 2rem; text-align: center;">
-                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; max-width: 800px; margin: 0 auto;">
-                            <button onclick="downloadPDF()" class="calculate-btn print-hide" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
-                                📄 Download as PDF
-                            </button>
-                            <button onclick="downloadExcel()" class="calculate-btn print-hide" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                                📊 Download as Excel
-                            </button>
-                        </div>
-                        <p class="print-hide" style="color: var(--text-muted); margin-top: 0.75rem; font-size: 0.85rem;">
-                            PDF: Print-ready report | Excel: Editable with formulas
-                        </p>
-                    </div>
-
                     <!-- Professional Signature & Logo Section (For PDF) -->
                     <div class="signature-section" style="margin-top: 4rem; padding: 2rem; border-top: 2px solid var(--border); page-break-inside: avoid;">
                         
@@ -1903,6 +1897,27 @@
                         </div>
                     </div>
 
+                    <!-- Download Options (After Signature Section) -->
+                    <div class="print-hide" style="margin-top: 3rem; text-align: center; padding: 2rem; background: rgba(144, 169, 85, 0.05); border-radius: 12px; border: 2px dashed var(--accent);">
+                        <h3 style="color: var(--accent); margin-bottom: 1.5rem; font-size: 1.3rem;">
+                            📥 Download Your Design Report
+                        </h3>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                            After filling in the document authorization details above, download your professional report
+                        </p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; max-width: 800px; margin: 0 auto;">
+                            <button onclick="downloadPDF()" class="calculate-btn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); font-size: 1.1rem; padding: 1.2rem 2rem;">
+                                📄 Download as PDF
+                            </button>
+                            <button onclick="downloadExcel()" class="calculate-btn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 1.1rem; padding: 1.2rem 2rem;">
+                                📊 Download as Excel
+                            </button>
+                        </div>
+                        <p style="color: var(--text-muted); margin-top: 1rem; font-size: 0.85rem;">
+                            💡 PDF: Print-ready professional report with signatures | Excel: Editable spreadsheet with formulas
+                        </p>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -1979,8 +1994,7 @@
         <div class="footer-content">
             <p>&copy; 2025 AASHTO Pavement Design Calculator. All rights reserved.</p>
             <div class="credit">
-                Created by <a href="https://www.linkedin.com/in/muhammad-ameen-78650322a?utm_source=share_via&utm_content=profile&utm_medium=member_ios" target="_blank" class="linkedin-btn">Engr. M. Ameen</a>
-            </div>
+                Created by <strong>Engr. M. Ameen</strong>
             </div>
         </div>
     </footer>
