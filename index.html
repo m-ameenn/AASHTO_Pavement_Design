@@ -1252,6 +1252,135 @@
                 font-size: 0.85rem;
             }
         }
+
+        /* Mobile Responsive Styles */
+        @media screen and (max-width: 768px) {
+            /* Container adjustments */
+            .container {
+                padding: 1rem;
+            }
+
+            /* Card spacing */
+            .card {
+                padding: 1.5rem 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            /* Typography */
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2.card-title {
+                font-size: 1.3rem;
+            }
+
+            /* Input groups */
+            .input-group {
+                margin-bottom: 1rem;
+            }
+
+            .input-group label {
+                font-size: 0.9rem;
+            }
+
+            /* Buttons */
+            .calculate-btn {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            /* Layer grid - stack on mobile */
+            .layers-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            /* Layer fields - stack vertically */
+            .layer-fields .field-row {
+                grid-template-columns: 1fr;
+            }
+
+            /* Nomograph */
+            #nomographCanvas {
+                max-height: 300px;
+            }
+
+            /* Cross-section table - enable horizontal scroll */
+            #crossSectionTable {
+                font-size: 0.85rem;
+            }
+
+            #crossSectionTable th,
+            #crossSectionTable td {
+                padding: 0.5rem;
+            }
+
+            /* Signature section - stack vertically */
+            .signature-section > div:first-of-type {
+                grid-template-columns: 1fr !important;
+                gap: 2rem !important;
+            }
+
+            .signature-section > div:last-of-type {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+
+            /* Download buttons - stack on mobile */
+            .download-buttons {
+                flex-direction: column;
+            }
+
+            /* ESAL Modal adjustments */
+            #esalModal > div {
+                width: 98%;
+                padding: 1rem;
+                margin: 1rem auto;
+            }
+
+            /* ESAL table - enable scroll */
+            #esalModal table {
+                font-size: 0.75rem;
+            }
+
+            #esalModal th,
+            #esalModal td {
+                padding: 0.5rem 0.25rem;
+            }
+
+            /* Hide some columns on very small screens */
+            @media screen and (max-width: 480px) {
+                #esalModal th:nth-child(4),
+                #esalModal td:nth-child(4),
+                #esalModal th:nth-child(6),
+                #esalModal td:nth-child(6) {
+                    display: none;
+                }
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            /* Extra small screens */
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 0.75rem;
+            }
+
+            .card {
+                padding: 1rem 0.75rem;
+            }
+
+            /* Make tables scrollable */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1792,6 +1921,146 @@
                     <div id="layers" class="layers-grid">
                         <div class="empty-state">
                             Results will appear here after calculation
+                        </div>
+                    </div>
+
+                    <!-- Typical Cross-Section Diagram -->
+                    <div id="crossSectionContainer" style="display: none; margin-top: 3rem;">
+                        <h2 class="card-title" style="margin-bottom: 1.5rem;">
+                            📏 Typical Pavement Cross-Section
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400; display: block; margin-top: 0.5rem;">
+                                Visual representation of designed pavement structure (Not to scale)
+                            </span>
+                        </h2>
+                        
+                        <div style="background: var(--bg-dark); padding: 2rem; border-radius: 12px; border: 2px solid var(--accent);">
+                            <!-- SVG Cross-Section -->
+                            <svg id="crossSectionSVG" viewBox="0 0 800 500" style="width: 100%; height: auto; max-height: 500px;">
+                                <!-- Ground (Subgrade) -->
+                                <defs>
+                                    <pattern id="subgradePattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                                        <circle cx="5" cy="5" r="2" fill="#8B7355" opacity="0.3"/>
+                                        <circle cx="15" cy="15" r="2" fill="#8B7355" opacity="0.3"/>
+                                    </pattern>
+                                    <pattern id="asphaltPattern" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+                                        <rect width="10" height="10" fill="#2c2c2c"/>
+                                        <circle cx="3" cy="3" r="1" fill="#4a4a4a"/>
+                                        <circle cx="7" cy="7" r="1" fill="#4a4a4a"/>
+                                    </pattern>
+                                    <pattern id="basePattern" x="0" y="0" width="15" height="15" patternUnits="userSpaceOnUse">
+                                        <circle cx="5" cy="5" r="3" fill="#999" opacity="0.5"/>
+                                        <circle cx="12" cy="12" r="2" fill="#666" opacity="0.5"/>
+                                    </pattern>
+                                    <pattern id="subbasePattern" x="0" y="0" width="15" height="15" patternUnits="userSpaceOnUse">
+                                        <circle cx="5" cy="5" r="2" fill="#aaa" opacity="0.4"/>
+                                        <circle cx="12" cy="10" r="2" fill="#888" opacity="0.4"/>
+                                    </pattern>
+                                </defs>
+                                
+                                <!-- Natural Ground -->
+                                <rect x="0" y="400" width="800" height="100" fill="url(#subgradePattern)" stroke="#8B7355" stroke-width="2"/>
+                                <text x="400" y="450" text-anchor="middle" fill="#8B7355" font-size="16" font-weight="bold">Natural Ground / Subgrade</text>
+                                <text id="subgradeLabel" x="700" y="450" text-anchor="middle" fill="#8B7355" font-size="14" font-weight="bold">CBR: -</text>
+                                
+                                <!-- Layer 4: Improved Subgrade (if exists) -->
+                                <g id="layer4Group" style="display: none;">
+                                    <rect id="layer4Rect" x="100" y="380" width="600" height="0" fill="#c19a6b" stroke="#8B7355" stroke-width="2"/>
+                                    <text id="layer4Text" x="400" y="390" text-anchor="middle" fill="#2c2c2c" font-size="14" font-weight="bold">Improved Subgrade</text>
+                                    <text id="layer4Thickness" x="50" y="390" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">0 mm</text>
+                                    <line id="layer4Line1" x1="80" y1="380" x2="80" y2="380" stroke="#fff" stroke-width="2"/>
+                                    <line id="layer4Line2" x1="75" y1="380" x2="85" y2="380" stroke="#fff" stroke-width="2"/>
+                                    <line id="layer4Line3" x1="75" y1="380" x2="85" y2="380" stroke="#fff" stroke-width="2"/>
+                                </g>
+                                
+                                <!-- Layer 3: Subbase -->
+                                <g id="layer3Group" style="display: none;">
+                                    <rect id="layer3Rect" x="100" y="340" width="600" height="0" fill="url(#subbasePattern)" stroke="#666" stroke-width="2"/>
+                                    <text id="layer3Text" x="400" y="350" text-anchor="middle" fill="#2c2c2c" font-size="14" font-weight="bold">Subbase Layer</text>
+                                    <text id="layer3Thickness" x="50" y="350" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">0 mm</text>
+                                    <line id="layer3Line1" x1="80" y1="340" x2="80" y2="340" stroke="#fff" stroke-width="2"/>
+                                    <line id="layer3Line2" x1="75" y1="340" x2="85" y2="340" stroke="#fff" stroke-width="2"/>
+                                    <line id="layer3Line3" x1="75" y1="340" x2="85" y2="340" stroke="#fff" stroke-width="2"/>
+                                </g>
+                                
+                                <!-- Layer 2: Base -->
+                                <g id="layer2Group" style="display: none;">
+                                    <rect id="layer2Rect" x="100" y="280" width="600" height="0" fill="url(#basePattern)" stroke="#555" stroke-width="2"/>
+                                    <text id="layer2Text" x="400" y="290" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Base Layer</text>
+                                    <text id="layer2Thickness" x="50" y="290" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">0 mm</text>
+                                    <line id="layer2Line1" x1="80" y1="280" x2="80" y2="280" stroke="#fff" stroke-width="2"/>
+                                    <line id="layer2Line2" x1="75" y1="280" x2="85" y2="280" stroke="#fff" stroke-width="2"/>
+                                    <line id="layer2Line3" x1="75" y1="280" x2="85" y2="280" stroke="#fff" stroke-width="2"/>
+                                </g>
+                                
+                                <!-- Layer 1: Surface (Asphalt) -->
+                                <g id="layer1Group" style="display: none;">
+                                    <rect id="layer1Rect" x="100" y="200" width="600" height="0" fill="url(#asphaltPattern)" stroke="#1a1a1a" stroke-width="3"/>
+                                    <text id="layer1Text" x="400" y="210" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Surface Layer (Asphalt)</text>
+                                    <text id="layer1Thickness" x="50" y="210" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">0 mm</text>
+                                    <line id="layer1Line1" x1="80" y1="200" x2="80" y2="200" stroke="#fff" stroke-width="2"/>
+                                    <line id="layer1Line2" x1="75" y1="200" x2="85" y2="200" stroke="#fff" stroke-width="2"/>
+                                    <line id="layer1Line3" x1="75" y1="200" x2="85" y2="200" stroke="#fff" stroke-width="2"/>
+                                </g>
+                                
+                                <!-- Title and Total Thickness -->
+                                <text x="400" y="30" text-anchor="middle" fill="var(--accent)" font-size="20" font-weight="bold">Pavement Structure</text>
+                                <text id="totalThicknessText" x="400" y="55" text-anchor="middle" fill="var(--text-light)" font-size="16">Total Pavement Thickness: 0 mm (0 inches)</text>
+                            </svg>
+                            
+                            <!-- Legend Outside SVG for Better Clarity -->
+                            <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border);">
+                                <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem; font-weight: 700;">Legend</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                    <!-- Surface -->
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div style="width: 40px; height: 30px; background: #2c2c2c; border: 2px solid #1a1a1a; border-radius: 4px; flex-shrink: 0;"></div>
+                                        <span style="color: var(--text-light); font-size: 0.9rem; font-weight: 500;">Surface (Asphalt)</span>
+                                    </div>
+                                    <!-- Base -->
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div style="width: 40px; height: 30px; background: #888; border: 2px solid #555; border-radius: 4px; flex-shrink: 0;"></div>
+                                        <span style="color: var(--text-light); font-size: 0.9rem; font-weight: 500;">Base Course</span>
+                                    </div>
+                                    <!-- Subbase -->
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div style="width: 40px; height: 30px; background: #aaa; border: 2px solid #666; border-radius: 4px; flex-shrink: 0;"></div>
+                                        <span style="color: var(--text-light); font-size: 0.9rem; font-weight: 500;">Subbase</span>
+                                    </div>
+                                    <!-- Improved Subgrade -->
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div style="width: 40px; height: 30px; background: #c19a6b; border: 2px solid #8B7355; border-radius: 4px; flex-shrink: 0;"></div>
+                                        <span style="color: var(--text-light); font-size: 0.9rem; font-weight: 500;">Improved Subgrade</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Summary Table Below Cross-Section -->
+                            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-card); border-radius: 8px;">
+                                <h3 style="color: var(--accent); margin-bottom: 1rem; font-size: 1.1rem;">📊 Layer Summary</h3>
+                                <div style="overflow-x: auto;">
+                                    <table id="crossSectionTable" style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                                    <thead>
+                                        <tr style="background: var(--accent); color: var(--bg-dark);">
+                                            <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border);">Layer</th>
+                                            <th style="padding: 0.75rem; text-align: center; border: 1px solid var(--border);">Thickness (mm)</th>
+                                            <th style="padding: 0.75rem; text-align: center; border: 1px solid var(--border);">Thickness (inches)</th>
+                                            <th style="padding: 0.75rem; text-align: center; border: 1px solid var(--border);">SN Contribution</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="crossSectionTableBody">
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="background: var(--accent); color: var(--bg-dark); font-weight: bold;">
+                                            <td style="padding: 0.75rem; border: 1px solid var(--border);">TOTAL</td>
+                                            <td id="totalMM" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border);">0 mm</td>
+                                            <td id="totalInch" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border);">0 in</td>
+                                            <td id="totalSN" style="padding: 0.75rem; text-align: center; border: 1px solid var(--border);">0.00</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -2629,7 +2898,9 @@
                 </div>
             `).join('') + `
                 <div class="layer-item" style="background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%); border: none;">
-                    <div class="layer-name" style="color: white;">Total SN Design</div>
+                    <div class="layer-name" style="color: white;">Total SN Design
+                        <span style="font-size: 0.75rem; font-weight: 400; opacity: 0.9; display: block; margin-top: 0.3rem;">📐 Σ(a × m × D)</span>
+                    </div>
                     <div class="layer-thickness" style="color: white;">${totalSN.toFixed(4)}</div>
                     <div class="layer-unit" style="color: rgba(255,255,255,0.7);">structural number</div>
                     <div class="layer-contribution" style="color: rgba(255,255,255,0.8); border-top-color: rgba(255,255,255,0.3);">
@@ -2637,6 +2908,91 @@
                     </div>
                 </div>
             `;
+            
+            // Update cross-section diagram
+            updateCrossSection(layers, totalSN);
+        }
+
+        function updateCrossSection(layers, totalSN) {
+            // Get CBR value for subgrade label
+            const cbr = parseFloat(document.getElementById('cbr').value) || 0;
+            document.getElementById('subgradeLabel').textContent = `CBR: ${cbr.toFixed(1)}%`;
+            
+            // Show cross-section container
+            document.getElementById('crossSectionContainer').style.display = 'block';
+            
+            // Calculate total thickness
+            let totalThicknessMM = 0;
+            let totalThicknessInch = 0;
+            let currentY = 400; // Start from subgrade level
+            
+            // Clear table body
+            const tableBody = document.getElementById('crossSectionTableBody');
+            tableBody.innerHTML = '';
+            
+            // Process each layer (reverse order for visual stacking)
+            const reversedLayers = [...layers].reverse();
+            
+            reversedLayers.forEach((layer, index) => {
+                const layerIndex = layers.length - index; // Original layer number
+                const thicknessMM = parseFloat(document.getElementById(`layer${layerIndex}mm`).value) || 0;
+                const thicknessInch = layer.thickness;
+                
+                if (thicknessMM > 0) {
+                    totalThicknessMM += thicknessMM;
+                    totalThicknessInch += thicknessInch;
+                    
+                    // Calculate SVG height (scale factor for visualization)
+                    const scaleFactor = 200 / Math.max(totalThicknessMM, 100); // Adjust scale
+                    const layerHeight = Math.max(thicknessMM * scaleFactor, 30); // Minimum 30px height
+                    
+                    currentY -= layerHeight;
+                    
+                    // Update SVG elements
+                    const group = document.getElementById(`layer${layerIndex}Group`);
+                    const rect = document.getElementById(`layer${layerIndex}Rect`);
+                    const text = document.getElementById(`layer${layerIndex}Text`);
+                    const thickness = document.getElementById(`layer${layerIndex}Thickness`);
+                    const line1 = document.getElementById(`layer${layerIndex}Line1`);
+                    const line2 = document.getElementById(`layer${layerIndex}Line2`);
+                    const line3 = document.getElementById(`layer${layerIndex}Line3`);
+                    
+                    group.style.display = 'block';
+                    rect.setAttribute('y', currentY);
+                    rect.setAttribute('height', layerHeight);
+                    text.setAttribute('y', currentY + layerHeight / 2 + 5);
+                    thickness.setAttribute('y', currentY + layerHeight / 2 + 5);
+                    thickness.textContent = `${thicknessMM.toFixed(0)} mm`;
+                    
+                    // Dimension lines
+                    line1.setAttribute('y1', currentY);
+                    line1.setAttribute('y2', currentY + layerHeight);
+                    line2.setAttribute('y1', currentY);
+                    line2.setAttribute('y2', currentY);
+                    line3.setAttribute('y1', currentY + layerHeight);
+                    line3.setAttribute('y2', currentY + layerHeight);
+                    
+                    // Add to table
+                    const row = document.createElement('tr');
+                    row.style.background = index % 2 === 0 ? 'var(--bg-dark)' : 'var(--bg-card)';
+                    row.innerHTML = `
+                        <td style="padding: 0.75rem; border: 1px solid var(--border);">${layer.name}</td>
+                        <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace;">${thicknessMM.toFixed(0)}</td>
+                        <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace;">${thicknessInch.toFixed(3)}</td>
+                        <td style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--accent);">${layer.snContribution.toFixed(4)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            });
+            
+            // Update total thickness text
+            document.getElementById('totalThicknessText').textContent = 
+                `Total Pavement Thickness: ${totalThicknessMM.toFixed(0)} mm (${totalThicknessInch.toFixed(2)} inches)`;
+            
+            // Update table totals
+            document.getElementById('totalMM').textContent = `${totalThicknessMM.toFixed(0)} mm`;
+            document.getElementById('totalInch').textContent = `${totalThicknessInch.toFixed(3)} in`;
+            document.getElementById('totalSN').textContent = totalSN.toFixed(4);
         }
 
         window.onload = function() {
@@ -2955,7 +3311,7 @@
             </div>
             
             <!-- Design Parameters -->
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-dark); border-radius: 8px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-dark); border-radius: 8px;">
                 <div>
                     <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Design Period (from main form)</label>
                     <input type="text" id="esal_designPeriod_display" value="" readonly style="width: 100%; padding: 0.75rem; background: #2d3748; border: 1px solid var(--accent); border-radius: 4px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 700; cursor: not-allowed;">
