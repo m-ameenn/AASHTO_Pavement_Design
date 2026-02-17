@@ -1454,6 +1454,115 @@
             }
         }
 
+        /* Scroll Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Animation Classes */
+        .scroll-animate {
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+
+        .scroll-animate.animated {
+            opacity: 1;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .fade-in-left {
+            animation: fadeInLeft 0.8s ease-out forwards;
+        }
+
+        .fade-in-right {
+            animation: fadeInRight 0.8s ease-out forwards;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .scale-in {
+            animation: scaleIn 0.8s ease-out forwards;
+        }
+
+        /* Stagger animations */
+        .animate-delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .animate-delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .animate-delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .animate-delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        .animate-delay-5 {
+            animation-delay: 0.5s;
+        }
+
+        .animate-delay-6 {
+            animation-delay: 0.6s;
+        }
+
         /* Mobile Responsive Styles */
         @media screen and (max-width: 768px) {
             /* Container adjustments */
@@ -1611,40 +1720,40 @@
     </section>
 
     <!-- Features Section -->
-    <section class="features" id="features">
-        <h2 class="section-title">Powerful Engineering Tools</h2>
+    <section class="features scroll-animate" id="features">
+        <h2 class="section-title scroll-animate fade-in-up">Powerful Engineering Tools</h2>
         <div class="features-grid">
-            <div class="feature-card">
+            <div class="feature-card scroll-animate fade-in-up animate-delay-1">
                 <div class="feature-icon">📊</div>
                 <h3>AASHTO Compliance</h3>
                 <p>Full implementation of AASHTO pavement design methodology with precise structural number calculations and reliability analysis.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card scroll-animate fade-in-up animate-delay-2">
                 <div class="feature-icon">🎯</div>
                 <h3>Real-Time Calculations</h3>
                 <p>Instant computation of LHS/RHS balance, structural numbers, and design adequacy as you adjust parameters.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card scroll-animate fade-in-up animate-delay-3">
                 <div class="feature-icon">🏗️</div>
                 <h3>Flexible Layer Design</h3>
                 <p>Support for both asphalt concrete and concrete pavers with customizable layer properties, thicknesses, and coefficients.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card scroll-animate fade-in-up animate-delay-4">
                 <div class="feature-icon">⚡</div>
                 <h3>CBR-Based Analysis</h3>
                 <p>Automatic resilient modulus calculation from CBR values with support for multiple subgrade conditions.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card scroll-animate fade-in-up animate-delay-5">
                 <div class="feature-icon">📐</div>
                 <h3>Layer Optimization</h3>
                 <p>Interactive thickness adjustment with immediate SN contribution feedback for each pavement layer.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card scroll-animate fade-in-up animate-delay-6">
                 <div class="feature-icon">✅</div>
                 <h3>Design Verification</h3>
                 <p>Built-in checks for equation balance and design adequacy to ensure structural integrity.</p>
@@ -1742,13 +1851,14 @@
     </section>
 
     <!-- How to Use Section -->
-    <section style="padding: 4rem 0; background: linear-gradient(135deg, #1a4d2e 0%, #2d5a3d 100%);">
-        <div class="container">
+    <section style="padding: 4rem 0; background: linear-gradient(135deg, #0f1419 0%, #1a2332 40%, #1a4d2e 100%); position: relative; overflow: hidden;">
+        <!-- Grid overlay matching hero -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg width=\"100\" height=\"100\" xmlns=\"http://www.w3.org/2000/svg\"><defs><pattern id=\"grid\" width=\"40\" height=\"40\" patternUnits=\"userSpaceOnUse\"><path d=\"M 40 0 L 0 0 0 40\" fill=\"none\" stroke=\"rgba(144,169,85,0.1)\" stroke-width=\"1\"/></pattern></defs><rect width=\"100\" height=\"100\" fill=\"url(%23grid)\"/></svg>'); opacity: 0.3; pointer-events: none;"></div>        <div class="container">
             <div style="max-width: 1200px; margin: 0 auto;">
-                <h2 style="text-align: center; color: #90a955; margin-bottom: 1rem; font-size: 2.5rem; font-weight: 800;">
+                <h2 class="scroll-animate fade-in-up" style="text-align: center; color: #90a955; margin-bottom: 1rem; font-size: 2.5rem; font-weight: 800;">
                     📖 How to Use This Calculator
                 </h2>
-                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 3rem; font-size: 1.1rem;">
+                <p class="scroll-animate fade-in-up animate-delay-1" style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 3rem; font-size: 1.1rem;">
                     Follow these simple steps to design your pavement structure
                 </p>
 
@@ -1756,7 +1866,7 @@
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
                     
                     <!-- Step 1 -->
-                    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
+                    <div class="scroll-animate scale-in animate-delay-1" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
                         <div style="width: 60px; height: 60px; background: #90a955; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; color: #1a4d2e;">1</div>
                         <h3 style="color: #90a955; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700;">Enter Project Information</h3>
                         <ul style="color: rgba(255,255,255,0.9); line-height: 1.8; padding-left: 1.5rem; margin: 0;">
@@ -1768,7 +1878,7 @@
                     </div>
 
                     <!-- Step 2 -->
-                    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
+                    <div class="scroll-animate scale-in animate-delay-2" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 2rem; border: 2px solid rgba(144,169,85,0.3); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(144,169,85,0.8)'" onmouseout="this.style.transform=''; this.style.borderColor='rgba(144,169,85,0.3)'">
                         <div style="width: 60px; height: 60px; background: #90a955; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; color: #1a4d2e;">2</div>
                         <h3 style="color: #90a955; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700;">Input Design Parameters</h3>
                         <ul style="color: rgba(255,255,255,0.9); line-height: 1.8; padding-left: 1.5rem; margin: 0;">
@@ -1835,7 +1945,7 @@
                 </div>
 
                 <!-- Quick Tips -->
-                <div style="background: rgba(144,169,85,0.2); border: 2px solid #90a955; border-radius: 12px; padding: 2rem; margin-top: 2rem;">
+                <div style="background: linear-gradient(135deg, #1a2332 0%, #1a4d2e 100%); border: 2px solid #90a955; border-radius: 12px; padding: 2rem; margin-top: 2rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
                     <h3 style="color: #90a955; margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 700; text-align: center;">
                         💡 Quick Tips
                     </h3>
@@ -3990,6 +4100,60 @@
         }
     `;
     document.head.appendChild(style);
+    </script>
+
+    <!-- Scroll Animation Script -->
+    <script>
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const animateOnScroll = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    // Don't unobserve if you want animations to repeat on scroll
+                    // observeOnScroll.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with scroll-animate class
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.scroll-animate');
+            animatedElements.forEach(el => {
+                animateOnScroll.observe(el);
+            });
+
+            // Add smooth scroll behavior
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#' && href !== '') {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+        // Add parallax effect to hero section (optional)
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero && scrolled < window.innerHeight) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+                hero.style.opacity = 1 - (scrolled / window.innerHeight);
+            }
+        });
     </script>
 
 </body>
