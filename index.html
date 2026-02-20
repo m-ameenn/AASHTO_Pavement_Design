@@ -34,11 +34,55 @@
 
         body {
             font-family: 'Work Sans', sans-serif;
-            background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(26, 77, 46, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(144, 169, 85, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(26, 35, 50, 0.4) 0%, transparent 70%),
+                linear-gradient(135deg, 
+                    #0a0e12 0%,
+                    #0f1419 15%,
+                    #1a2332 30%,
+                    #1a3d2e 50%,
+                    #1a2f3d 70%,
+                    #0f1a1e 100%
+                );
+            background-size: 200% 200%;
+            background-attachment: fixed;
+            animation: gradientShift 20s ease infinite;
             color: var(--text-light);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 0%, rgba(144, 169, 85, 0.03) 50%, transparent 100%),
+                linear-gradient(0deg, transparent 0%, rgba(26, 77, 46, 0.05) 50%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            25% {
+                background-position: 50% 25%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            75% {
+                background-position: 50% 75%;
+            }
         }
 
         .container, .nav-container, .hero-content, .features, .blog-container {
@@ -790,6 +834,43 @@
             padding: 1rem;
             border-top: 1px solid var(--border);
             margin-top: 1rem;
+        }
+
+        .linkedin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            background: linear-gradient(135deg, #0077b5 0%, #005582 100%);
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-family: 'Work Sans', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 119, 181, 0.3);
+            margin-left: 0.5rem;
+        }
+
+        .linkedin-btn:hover {
+            background: linear-gradient(135deg, #005582 0%, #003d5c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 119, 181, 0.5);
+        }
+
+        .linkedin-btn::before {
+            content: "in";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: white;
+            color: #0077b5;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border-radius: 3px;
+            font-family: 'Work Sans', sans-serif;
         }
 
         .credit strong {
@@ -1903,9 +1984,61 @@
                 white-space: nowrap;
             }
         }
+
+        /* Subtle Floating Particles Effect */
+        .particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(144, 169, 85, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-duration: 25s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-duration: 28s; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 30%; animation-duration: 22s; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 40%; animation-duration: 30s; animation-delay: 1s; }
+        .particle:nth-child(5) { left: 50%; animation-duration: 26s; animation-delay: 3s; }
+        .particle:nth-child(6) { left: 60%; animation-duration: 24s; animation-delay: 5s; }
+        .particle:nth-child(7) { left: 70%; animation-duration: 29s; animation-delay: 2.5s; }
+        .particle:nth-child(8) { left: 80%; animation-duration: 27s; animation-delay: 4.5s; }
+        .particle:nth-child(9) { left: 90%; animation-duration: 23s; animation-delay: 1.5s; }
+        .particle:nth-child(10) { left: 15%; animation-duration: 31s; animation-delay: 6s; }
     </style>
 </head>
 <body>
+    <!-- Floating Particles Background Effect -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
@@ -2911,14 +3044,16 @@
 
     <!-- Footer -->
     <footer>
-       <div class="credit">
-    Designed & Developed by 
-    <a href="https://pk.linkedin.com/in/muhammad-ameen-78650322a"
-       target="_blank"
-       class="linkedin-btn">
-       Engr. M. Ameen
-    </a>
-</div>
+        <div class="footer-content">
+            <p>&copy; 2025 AASHTO Pavement Design Calculator. All rights reserved.</p>
+            <div class="credit">
+                Designed & Developed by 
+                <a href="https://pk.linkedin.com/in/muhammad-ameen-78650322a"
+                   target="_blank"
+                   class="linkedin-btn">
+                   Engr. M. Ameen
+                </a>
+            </div>
         </div>
     </footer>
 
